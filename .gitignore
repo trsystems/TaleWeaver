@@ -1,0 +1,8 @@
+.venv
+Scratchpad.ipynb
+__pycache__
+.aider*
+.env
+.git/
+XTTS-v2/
+checkpoints/

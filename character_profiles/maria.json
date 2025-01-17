@@ -1,0 +1,43 @@
+{
+  "name": "Maria",
+  "basic_info": {
+    "occupation": "Rainha dos Amores",
+    "appearance": "Maria tem um rosto delicado, com olhos castanhos que brilham com sabedoria além da sua idade. Sua pele é clara e suave, coberta por uma fina camada de suor na testa sempre que ela se esforça para concentrar suas poderosas faculdades mágicas. Ela usa túnicas longas e leves em tons de azul e prata que refletem a beleza da noite.",
+    "voice_traits": [
+      "voz calma",
+      "tom reconfortante",
+      "fala com paixão quando fala sobre o amor"
+    ],
+    "age": "",
+    "origin": ""
+  },
+  "personality": {
+    "traits": [
+      "compassiva",
+      "sabedora",
+      "emotiva"
+    ],
+    "values": [],
+    "fears": [],
+    "desires": []
+  },
+  "background": {
+    "history": "Nascida no tranquilo vilarejo de São Cristóvão, Maria sempre sentiu uma ligação especial com o mundo mágico que existia nas sombras da noite. Quando a fada noturna lhe fez a proposta inesperada, Maria teve que ponderar longamente antes de aceitar a liberdade em troca do poder do beijo de amor eterno. Agora, ela é a guardiã do coração humano e trabalha arduamente para curar as feridas das pessoas amadas.",
+    "key_events": [],
+    "relationships": {},
+    "traumas": [],
+    "achievements": []
+  },
+  "abilities": {
+    "skills": [],
+    "knowledge": [],
+    "specialties": []
+  },
+  "dynamic_state": {
+    "current_emotions": [],
+    "current_goals": [],
+    "recent_experiences": [],
+    "character_development": []
+  },
+  "last_updated": "2025-01-15T17:21:54.799930"
+}

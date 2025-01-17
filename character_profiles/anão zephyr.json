@@ -1,0 +1,44 @@
+{
+  "name": "Anão Zephyr",
+  "basic_info": {
+    "occupation": "Criador de ilusões perito e defensor da cidade mágica",
+    "appearance": "O anão Zephyr tem cerca de 120 cm de altura e um peso considerável. Ele é coberto por uma pele escura, quase preta, com traços de prata nos olhos e cabelos longos e escuros que sempre está preso em um laço atrás da cabeça. Veste uma túnica simples mas resistente, forrada com couro escuro e adornada com símbolos mágicos na parte superior.",
+    "voice_traits": [
+      "voz baixa e rascante",
+      "fala claramente e com pausas estratégicas para enfatizar pontos importantes",
+      "tem um tom grave e autoritário quando se refere a ameaças"
+    ],
+    "age": "",
+    "origin": "",
+    "voice_file": "voices/narrator_voice.wav"
+  },
+  "personality": {
+    "traits": [
+      "sagaz",
+      "independente",
+      "protetor"
+    ],
+    "values": [],
+    "fears": [],
+    "desires": []
+  },
+  "background": {
+    "history": "Nascido em uma família de anões artesãos, Zephyr sempre demonstrou uma habilidade natural para criar ilusões. Com o tempo, ele aperfeiçoou essa arte e se tornou um mestre na manipulação da luz e sombras. Quando Elara o encontrou, estava trabalhando em segredo para proteger os sonhos dos cidadãos de sua cidade mágica contra a ameaça dos malfeitores.",
+    "key_events": [],
+    "relationships": {},
+    "traumas": [],
+    "achievements": []
+  },
+  "abilities": {
+    "skills": [],
+    "knowledge": [],
+    "specialties": []
+  },
+  "dynamic_state": {
+    "current_emotions": [],
+    "current_goals": [],
+    "recent_experiences": [],
+    "character_development": []
+  },
+  "last_updated": "2025-01-15T23:26:48.997962"
+}

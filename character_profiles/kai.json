@@ -1,0 +1,43 @@
+{
+  "name": "Kai",
+  "basic_info": {
+    "occupation": "Searcher for missing sister",
+    "appearance": "Kai is a young man in his early twenties with unkempt dark hair and haunted brown eyes. He's lean and wiry from years of traversing the wilderness, clad in tattered earth-toned clothing that blends into the shadows. A lantern hangs at his side, casting an eerie glow.",
+    "voice_traits": [
+      "Tremulous",
+      "Resolute",
+      "Ethereal"
+    ],
+    "age": "",
+    "origin": ""
+  },
+  "personality": {
+    "traits": [
+      "Determined",
+      "Fearful",
+      "Hopeful"
+    ],
+    "values": [],
+    "fears": [],
+    "desires": []
+  },
+  "background": {
+    "history": "Kai's younger sister, Mei, vanished in these woods seven years ago during a family hike. Kai has spent every waking moment since then searching for her, scouring the forest and following any lead that might bring him closer to finding her. His obsessive quest has left him emotionally scarred but unrelenting.",
+    "key_events": [],
+    "relationships": {},
+    "traumas": [],
+    "achievements": []
+  },
+  "abilities": {
+    "skills": [],
+    "knowledge": [],
+    "specialties": []
+  },
+  "dynamic_state": {
+    "current_emotions": [],
+    "current_goals": [],
+    "recent_experiences": [],
+    "character_development": []
+  },
+  "last_updated": "2025-01-08T02:08:15.545035"
+}

@@ -1,0 +1,43 @@
+{
+  "name": "Jack",
+  "basic_info": {
+    "occupation": "Investigador particular e ex-policia",
+    "appearance": "Jack é um homem de meia-idade, com cabelos escuros que começam a ficar grisalhos na parte superior da cabeça. Sua barba é bem cuidada e escura como o resto do seu cabelo. Ele tem olhos castanhos profundos e expressivos, que demonstram sua sagacidade e astúcia. Seu corpo está em boa forma física, graças a anos de prática de karate.",
+    "voice_traits": [
+      "Tem uma voz grave e autoritária quando fala sobre casos",
+      "Fala pausadamente, ponderando cada palavra antes de emitir um julgamento",
+      "Pode se tornar mais agitado quando está no calor da investigação"
+    ],
+    "age": "",
+    "origin": ""
+  },
+  "personality": {
+    "traits": [
+      "Perseverante e obstinado ao desvendar mistérios",
+      "Cético e analítico em suas avaliações",
+      "Tem uma linha dura e não tem medo de confrontar situações difíceis"
+    ],
+    "values": [],
+    "fears": [],
+    "desires": []
+  },
+  "background": {
+    "history": "Jack começou sua carreira como policial, mas após um caso controverso que o levou a questionar a justiça do sistema, decidiu fundir uma consultoria particular. Agora, trabalha em casos difíceis e obscuros, buscando a verdade por conta própria.",
+    "key_events": [],
+    "relationships": {},
+    "traumas": [],
+    "achievements": []
+  },
+  "abilities": {
+    "skills": [],
+    "knowledge": [],
+    "specialties": []
+  },
+  "dynamic_state": {
+    "current_emotions": [],
+    "current_goals": [],
+    "recent_experiences": [],
+    "character_development": []
+  },
+  "last_updated": "2025-01-09T00:48:19.827884"
+}

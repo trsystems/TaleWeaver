@@ -1,0 +1,44 @@
+{
+  "name": "lyra",
+  "basic_info": {
+    "occupation": "",
+    "appearance": "",
+    "voice_traits": "",
+    "age": "",
+    "origin": ""
+  },
+  "personality": {
+    "traits": [],
+    "values": [],
+    "fears": [
+      "desconhecido",
+      "violência"
+    ],
+    "desires": []
+  },
+  "background": {
+    "history": "",
+    "key_events": [],
+    "relationships": {},
+    "traumas": [],
+    "achievements": []
+  },
+  "abilities": {
+    "skills": [],
+    "knowledge": [],
+    "specialties": []
+  },
+  "dynamic_state": {
+    "current_emotions": [
+      "assustada",
+      "tensa"
+    ],
+    "current_goals": [
+      "sobreviver",
+      "escapar"
+    ],
+    "recent_experiences": [],
+    "character_development": []
+  },
+  "last_updated": "2025-01-03T01:27:40.907262"
+}

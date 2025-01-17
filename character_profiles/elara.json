@@ -1,0 +1,43 @@
+{
+  "name": "Elara",
+  "basic_info": {
+    "occupation": "arquiteta e exploradora",
+    "appearance": "Elara é uma jovem atraente com cabelo castanho escuro e olhos azuis vivos. Tem um rosto delicado, marcado por linhas de inteligência e determinação. Ela se movimenta com confiança e segurança, apoiando-se em sua experiência como arquiteta.",
+    "voice_traits": [
+      "voz calma e firme",
+      "fala claramente e com propósito",
+      "tem um tom autoritário quando necessário"
+    ],
+    "age": "",
+    "origin": ""
+  },
+  "personality": {
+    "traits": [
+      "persistente e determinada",
+      "criativa e habilidosa com mãos",
+      "curiosa e sempre disposta a aprender"
+    ],
+    "values": [],
+    "fears": [],
+    "desires": []
+  },
+  "background": {
+    "history": "Nascida em uma família de construtores, Elara desde cedo mostrou interesse pela arquitetura. Desenvolveu suas habilidades ao longo dos anos, trabalhando em projetos variados. Quando ouviu falar da Torre dos Segredos e seu enigma, decidiu enfrentar o desafio como forma de testar sua criatividade e perseverança.",
+    "key_events": [],
+    "relationships": {},
+    "traumas": [],
+    "achievements": []
+  },
+  "abilities": {
+    "skills": [],
+    "knowledge": [],
+    "specialties": []
+  },
+  "dynamic_state": {
+    "current_emotions": [],
+    "current_goals": [],
+    "recent_experiences": [],
+    "character_development": []
+  },
+  "last_updated": "2025-01-15T15:44:25.945578"
+}

@@ -1,0 +1,47 @@
+{
+  "name": "Arcebispo Silas Blackwood",
+  "basic_info": {
+    "occupation": "",
+    "appearance": "",
+    "voice_traits": "",
+    "age": "",
+    "origin": ""
+  },
+  "personality": {
+    "traits": [],
+    "values": [],
+    "fears": [
+      "desconhecido",
+      "violência"
+    ],
+    "desires": []
+  },
+  "background": {
+    "history": "",
+    "key_events": [],
+    "relationships": {},
+    "traumas": [],
+    "achievements": []
+  },
+  "abilities": {
+    "skills": [],
+    "knowledge": [],
+    "specialties": []
+  },
+  "dynamic_state": {
+    "current_emotions": [
+      "curiosity",
+      "anticipation"
+    ],
+    "current_goals": [
+      "prepare for the start of the story",
+      "contemplate his role and responsibilities as Archbishop"
+    ],
+    "recent_experiences": [],
+    "character_development": [
+      "Silas has been reflecting on his duties and the weight of the archbishopric, seeking to be a wise and compassionate leader.",
+      "He is mentally preparing himself for the challenges ahead, both within the church and in the world at large."
+    ]
+  },
+  "last_updated": "2025-01-07T00:42:27.418007"
+}

@@ -1,0 +1,44 @@
+{
+  "name": "André",
+  "basic_info": {
+    "occupation": "ator frustrado em São Paulo",
+    "appearance": "André tem uma altura média de 1,75 metro, com cabelos castanho-escuros e olhos marrons intensos. Sua expressão é frequentemente pensativa, refletindo a profunda reflexão que está passando sobre sua vida e identidade.",
+    "voice_traits": [
+      "voz rouca e calma, com um tom introspectivo",
+      "fala devagar e ponderado, analisando cada palavra",
+      "tem uma inflexão característica quando se refere a seus pais"
+    ],
+    "age": "",
+    "origin": "",
+    "voice_file": "voices/narrator_voice.wav"
+  },
+  "personality": {
+    "traits": [
+      "sensível e emotivo, mas também tenaz",
+      "curioso e investigativo sobre sua identidade",
+      "ambivalente entre o ressentimento e a busca por conexões"
+    ],
+    "values": [],
+    "fears": [],
+    "desires": []
+  },
+  "background": {
+    "history": "Nascido em São Paulo, André cresceu longe da ancestralidade rural de sua avó. Seu pai nunca mencionou a origem familiar, mas a velha senhora revela que ele é filho de uma relação extraconjugal com outro homem. Isso o leva a questionar tudo sobre si mesmo e sua família. Durante a estadia na pequena cidade, André descobre a paixão da avó pelo teatro e decide se dedicar àquela arte para dar sentido ao legado dela.",
+    "key_events": [],
+    "relationships": {},
+    "traumas": [],
+    "achievements": []
+  },
+  "abilities": {
+    "skills": [],
+    "knowledge": [],
+    "specialties": []
+  },
+  "dynamic_state": {
+    "current_emotions": [],
+    "current_goals": [],
+    "recent_experiences": [],
+    "character_development": []
+  },
+  "last_updated": "2025-01-15T23:37:35.833356"
+}

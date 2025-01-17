@@ -1,0 +1,44 @@
+{
+  "name": "Artista Elara",
+  "basic_info": {
+    "occupation": "Desenhista e ilusionista emergente",
+    "appearance": "Elara tem cabelos escuros e longos que costumam se desenrolar em cachos quando ela se concentra. Seus olhos são de um azul claro, brilhando com a luz da criatividade dentro dela. Ela é magra e alta para uma mulher, com movimentos grácilos e contidos. Geralmente veste roupas confortáveis em cores escuras que contrastam com o brilho de seus desenhos.",
+    "voice_traits": [
+      "vocal suave",
+      "fala rapidamente quando emocionada",
+      "tem um sussurro suave"
+    ],
+    "age": "",
+    "origin": "",
+    "voice_file": "voices/narrator_voice.wav"
+  },
+  "personality": {
+    "traits": [
+      "curiosa",
+      "insegura",
+      "diligente"
+    ],
+    "values": [],
+    "fears": [],
+    "desires": []
+  },
+  "background": {
+    "history": "Nascida em uma família de artistas, Elara sempre teve a paixão pelas belas-artes. Em sua cidade mágica natal, ela descobriu que seus desenhos tinham vida própria ao se manifestarem no mundo real. Intrigada por essa habilidade, Elara começou a investigar e treinar para controlá-la melhor. Ao encontrar Zephyr, um anão experiente em ilusões, formaram uma aliança para proteger os sonhos das pessoas de cidadãos mal intencionados.",
+    "key_events": [],
+    "relationships": {},
+    "traumas": [],
+    "achievements": []
+  },
+  "abilities": {
+    "skills": [],
+    "knowledge": [],
+    "specialties": []
+  },
+  "dynamic_state": {
+    "current_emotions": [],
+    "current_goals": [],
+    "recent_experiences": [],
+    "character_development": []
+  },
+  "last_updated": "2025-01-15T23:00:38.053773"
+}

@@ -1,0 +1,43 @@
+{
+  "name": "João",
+  "basic_info": {
+    "occupation": "Estudante secundário",
+    "appearance": "João tem 1,75m de altura, cabelos castanhos curtos e olhos verdes. Ele costuma usar camisas simples e calças jeans, preferindo um estilo casual.",
+    "voice_traits": [
+      "suave",
+      "calmo",
+      "inseguro quando fala sobre seus sonhos"
+    ],
+    "age": "",
+    "origin": ""
+  },
+  "personality": {
+    "traits": [
+      "inseguro",
+      "sonhador",
+      "determinado"
+    ],
+    "values": [],
+    "fears": [],
+    "desires": []
+  },
+  "background": {
+    "history": "Grew up em uma cidade pequena do interior, onde a vida é tranquila mas também limitada. Ele se sente claustrofóbico e sonha em escapar para construir um futuro mais amplo.",
+    "key_events": [],
+    "relationships": {},
+    "traumas": [],
+    "achievements": []
+  },
+  "abilities": {
+    "skills": [],
+    "knowledge": [],
+    "specialties": []
+  },
+  "dynamic_state": {
+    "current_emotions": [],
+    "current_goals": [],
+    "recent_experiences": [],
+    "character_development": []
+  },
+  "last_updated": "2025-01-15T16:30:08.709587"
+}

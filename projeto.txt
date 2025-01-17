@@ -1,0 +1,161 @@
+## PROJETO CHATBOT PARA HISTÓRIAS V5 ##
+
+DESCRIÇÃO GENÉRICA: 
+	Chatbot criado em linguagem python com utilização de LLM através do LMStudio rodando localmente, onde serão gerados dois ou mais bots para representar um personagem de uma história, esses personagens devem manter seu histórico de conversa e caractéristicas próprias armazenadas em arquivos e banco de dados, buscando responder e agir interpretando seu respectivo personagem. Os personagens devem interagir com o usuário respondendo cada interação como se o usuário fosse outro personagem. Cada bot terá um nome e uma voz unica que será reproduzida após a resposta em texto. Os bots devem reagir de acordo com as interações do usuário/player mantendo sempre o contexto da história e coerência. Além desses bots haverá um narrador a ser selecionado que irá ajudar a contextualizar a história de uma visão externa, sem ativamente participar da história.
+
+PROJETO:
+	Este é um projeto para chatbot de histórias, sendo executado com interações tanto via terminal quanto em uma interface gráfica. 
+	
+	O programa inicia exibindo opções em um menu interativo, onde o usuário seleciona a funcionalidade desejada.
+
+OBJETIVO: 
+	O objetivo pricipal é criar histórias ricas e envolventes através de utilização de IA (LLM local ou online), criando uma narração interessante, trazendo imerção ao usuário/jogador e permitindo que ele conduza os rumos da história conforme responde ou interage através de seu personagem (definido no inicio da história), interagindo com os demais personagens (controlados pela Inteligência Artifical).
+
+INTERAÇÃO DO USUÁRIO:
+	A interação do usuário/player é feita com a possibilidade de envio de mensagens diretas para o narrador de histórias ou para os personagens da história.
+
+HISTÓRIA:
+	A história deve ser gerada pela LLM, apresetando ao usuário/player 4 opções de histórias dentro do contexto de uma tema definido pelo usuário através do menu.
+	Caso o usuário não esteja satisfeito com as históirias geradas ele pode solicitar geração de novas histórias.
+	
+NARRADOR:
+	- Descrição do narrador:
+		O Narrador é um personagem que não participa ativamente da história, ele é onisciente com relação aos acontecimentos da história e tem o objetivo apenas de narrar a ajudar a dar contexto na história. Não se envolve diretamente, mas responde perguntas do usuário diretamente para ele, por exemplo descrição de personagens ou cenas, lembranças de acontecimentos, entre outros.
+
+	- Tipos de narrador
+		Há dois tipos diferentes de narradores:
+		- Narrador descritivo que somente explica os acontecimentos e narra as cenas, esse é o padrão
+		- Narrador Sassy (esse quebra um pouco as regras), ele é extremamente irreverente, sarcástico e debochado, semelhante ao personagem Coringa do batman. Ele "quebra a quarta parede" e interage diretamente com o usuário, fazendo piadas, tirando sarro de alguma interação do usário entre outras ações.
+
+	- Modo de fala: 
+		O narrador descreve a cena considerando contexto dos personagens, relacionamentos, sentimentos e desenrolar da história, sempre em terceira pessoa (com excessão do narrador sassy que tem a possibilidade de falar direto com o usu[ario /player as vezes).
+
+	- Voz: 
+		O narrador possui voz própria e perfil próprio, ou seja há mais de um narrador possível com estilos diferentes (ver narrator_system.py).
+
+PERSONAGENS:
+
+	- Criação:
+		A criação de personagens deve ocorrer automaticamente no inicio da história, com base na história proposta pela LLM e selecionada pelo usuário/player, assim como identificar e adicionar novos personagens a medida que els aparecerem na história. Também há a possibilidade de buscar novos personagens que possam não ter sido criados automaticamente por conta de algum tipo de falha através da função "analisar história", feita através do menu interativo:  8. Analisar história e os personagens existentes podem ser exibidos através do menu interativo: "Ver/gerenciar personagens" que permite também favoritar ou desfavoritar um personagem com o objetivo de ele não ser excluído durante o processo de reset de história. Tanto via modo autoimático, quanto com o comando "analisar história" as características serão definidas pela IA com base na história e conversa identifdicadas até então, permitindo somente que o usuário/player selecione a voz desejada para o personagem no momento da criação.
+		
+	- Regras para criação:
+		A adição de novos personagens deve ser feita somente após uma verificação se o personagem em questão:
+			1) Já não existe
+			2) Se o nome citado não é semelhante a um personagem já existe, fazendo o relacionamento caso isso ocorra e evitando de acionar a criação duplicada.
+			3) Fazer a criação com nomes próprios e se possível nome e sobrenome, exceto quando tudo indica que é um novo personagem,. tem características próprias e ainda não foi criado, então nesse caso, é criado um personagem com um nome específico por exemplo: Homem de capuz (ainda não identificado), ai quando for descoberto a identidade dele, é atualizado operfil com o nome.
+			
+	- Interação:
+		O usuário/player poderá interagir com o personagem selecionado-o através do menu 1. Falar com personagem, seguido da seleção do personagem desejado.
+		
+		IMPORTANTE: Quando o personagem selecionado não for o narrador, ele deve responder ao personagem do usuário/player em primeira pessoa, se dirigindo diretamente para ele. Quando a LLM mencionar ações, comportamentos ou pensamentos do personagem na resposta, seguiido de falas do personagem, o narrador deve descrever essas ações, comportamentos ou pensamentos em terceira pessoa (Essa instrução deve ser clara para a LLM, caso contrário não irá gerar ou output desejado), nesse caso o narrador descreve essas interações, seguido da resposta pelo personagem, seguindo esse processo sempre que ocorrer, mantendo texto e voz próprios para narrador e personagens alternado até o fim da interação, por exemplo:
+			Avalon (usuário/player que é você): Stella porque você fez isso com a Julia?
+			Narrador: Stella pensativa se aproxima da cadeira ao lado da porta do quarto, senta e responde
+			Stella: Julia foi estremamete rude comigo... Ela jogou um copo no meu rosto quando fui conversar com ela.
+			Narrador: Stella desabafa com pesar....
+			
+		As interações desse tipo tem uma abordagem que poderá ser somente a resposta do personagem em primeira pessoa de maneira direta ou uma mesclagem entre personagem e narrador, sendo registradas como interação do personagem para quem está sendo dirigido a comunicação.
+	
+SENTIMENTOS:
+	Existe uma análise de sentimento na resposta, classificando e exibindo de acordo com a resposta, entonação e contexto do personagem com o usuário/player ou com demais personagens, mostrando claramente o que esse personagem está sentindo no momento da fala.
+
+RELACIONAMENTO: 
+	O sistema de relacionamento de personagens deve considerar o contexto da história, a posição do personagem na ação considerando seus objetivos e vivências, o relacionamento dele com o usuário/player ou outro personagem e emoções, para dar legitimidade ao personagem e considerar suas caractérisitcas prórpias nas interações, com o objetivo  de criar histórias consistentes.
+	
+LUGARES:
+	Lugares devem ser criados e adicionados a um banco de dados, de forma semelhante aos personagens, sendo gravados a medida que aparecem na história considerando a descrição de suas características. O comando analisar história também possibilita adiconar lugares que possam naõ ter sido registrados automaticamente. Os lugares podem ser exibidos através da função: 5. 'Ver lugares" do menu interativo.
+	
+SISTEMA DE LEMBRANÇAS
+	Acessado via menu interativo: "3. Ver lembranças" pelo terminal ou seleção de botão via interface, Grava dados no arquivo character_memories.db em formato SQLite format 3.
+	
+	O sistema de lembranças recupera "memórias" dos personagens em um formato mais estruturado e explícito.Ele guarda de maneira individual as memórias de interações do usuário com os personagens para que possam ser reculperadas após o encerramento do programa, organizando as em formato decrecente de acordo com o horário da interação, estruturando o registro da seguinte forma:
+	
+	DATA HORA - EMOÇÃO:
+	FALA DO USUÁRIO | REPOSTA DO PERSONAGEM
+	
+
+SISTEMA DE CONTEXTO
+Acessado via menu interativo: "2. Ver contexto" pelo terminal ou seleção de botão via interface, grava no arquivo story_hystory.db em formato SQLite format 3 é estruturado via consulta ao histórico do personagem no character_memories.db e resumido pela LLM.
+
+O sistema de contexto traz um resumo da história, contextualizando através das interações com os personagens o ocorrido desde o início até o atual momento, permitindo o usuário e a LLM se contextualizar com os acontecimentos dar um sequência coerente na história, estruturando o registro da seguinte forma:
+
+Escolha uma opção (1-10): 2
+[DEBUG][StoryChat] Gerando resumo do contexto
+
+=== Contexto Atual ===
+Contexto atual da cena:
+        Local: Berlim Oriental
+        Horário: dia
+        Atmosfera: Neutro
+
+=== Resumo da História ===
+Em Berlim Oriental dos anos 80, Matthias encontrava-se no limiar de uma nova vida ao se juntar a um grupo dissidente planejando escapar para o Ocidente. No entanto, sua jornada foi abruptamente interrompida quando foi descoberto pelos agentes da Stasi. Forçado a trabalhar como informante, Matthias ficou cada vez mais dividido entre sua lealdade à causa e as consequências morais de suas escolhas.
+
+A tensão política permeava todos os aspectos da vida em Berlim Oriental durante aqueles anos, com edifícios gêmeos e muros de concreto marcando a divisão entre o Leste e o Oeste. Através do seu trabalho como informante para a Stasi, Matthias foi capaz de evitar punições severas, mas o custo moral pesava sobre ele cada dia. Amigos e conhecidos começaram a
+	
+
+MODOS DE OPERAÇÃO DO PROGRAMA: 
+	Utilização é feita via terminal e também via interface(NO MOMENTO FUNCIONA semelhante a comunicação de envio de mensagens do whatsapp).
+	
+	A idéia é que ambos os modos sejam integrados, permitindo a utilização pelo usuário de ambas as formas, sem perder funcionalidades e buscando manter o código com facilidade. Pode haver mudanças poontuais, devido a diferente usabilidade entre terminal e interface, mas as funcionalidades principais serão iguis em ambos os modos.
+
+CONFIGURAÇÕES DE EQUIPAMENTO: 
+
+Sistema funcionando em computador local utilizando o aplicativo LMStudio para acesso aos modelos de LLM conectando o programa através de API (client OpenAI) que por sua vez executa os processamentos da LLM em uma placa de video RTX 4070, uitilizando também um processador 12th Gen Intel(R) Core(TM) i7-12700F e 64 GB de memória.
+
+=== Menu Principal ===
+	1. Falar com personagem
+		- Possui as seguintes possibilidades
+			- "Falar com personagens" que pode ser:
+				- Narrador (Apenas narra a história em terceira pessoa, descrvendo acontecimentos e ações dos personagens, sem interação direta com o usuário)
+				- Personagens (Uma conversa direta do personagem do usúario com o personagem interpretado pela LLM (obtido em uma lista de personagens existentes) Essa interação é direta, ou seja em primeira pessoa, então o personagem terá voz, caracteristicas e lugar próprio na história, podendo responder diretamente ao player em primeira pessoa.
+				- Personagens com Narrador (Essa forma de interação deve ser utilizada sempre que o player (usuário) falar com um personagem, mas a LLM retorna um texto de ação, seguido de fala do personagem em primeira pessoa, descrito  por exemplo dessa forma: 
+				"Narrador: Milena se aproxima de Jhon e fala com pesar na voz" (reprodução de voz do Narrador)
+				"Milena: Eu não sei porque ela fez isso!" (reprodução de voz do personagem)
+				
+				
+	2. Ver contexto (Traz um resumo dá história até o momento para contextualizar o player e a LLM)
+	3. Ver lembranças (Traz o histórico de conversa do personagem selecionado para contextualizar o player e a LLM)
+	4. Ver/gerenciar personagens (traz personagens existentes na história até o momento, permitindo visualizar seu perfil (características) e trocar a voz dso personagem,além de permitr salvar esse personagem como favorito (favoritar/desfavoitar) para evitar que ele seja excluindo durante po procedimento de reset da história).
+	5. Ver lugares (traz um histórico dos lugares mencionados durante o histórico da conversa, registrando as caracteríticas desses lugares).
+	6. Editar histórico (permite que o usuário remova uma determinada interação com personagens, afim de mudar o rumo dos acontecimentos.
+	7. Mudar narrador (permite alterar entre perfis de narradores existentes)
+	8. Analisar história (permite analisar o histórico em busca de personagens e lugares para resgistro caso possam não ter sido adicionados por algum motivo especifico.) 
+	9. Resetar história (permita apagar todos os registros de dados do banco de dados, sejam registros de lugares, personagens, históricos ou interação e iniciar uma nova história).
+	10. Sair
+
+
+## MODO DE FUNCIONAMENTRO TERMINAL - CLI ##
+
+Terminal (CLI)
+
+Atualmente, no terminal a execução é a seguinte:
+
+1. Programa é Carregado.
+
+2. O usuário seleciona o no menu interativo a opção desejada. 
+
+3. Caso a opção selecionada seja de interação: "1. Falar com personagem" o usuário seleciona se a mensagem de entrada será direcionada para narrador ou personagens, e envia a mensagem que é encaminhada para processamento, análise de emoção e resposta da LLM, fazendo também um relacionamento da resposta usuário e personagens.
+
+4. O "sistema" com base na resposta da LLM interpretando personagens ou narrador fornece a resposta em texto considerando a emoção da entrada do usuário e emoção do personagem com base na história ou características do personagem (a emoção do personagem é "mostrada no terminal, exemplo: Estado Emocional: FELIZ 😊, Intensidade: |███░░░░░░░| 0.40. Narrador não possui emoção ao descrever as cenas, mas dependendo do Narrador ele pode interagir com o usuário conforme características proprias definidas em seu perfil.
+
+5. O "sistema" segmenta a resposta da LLM para evitar audio truncado, e coloca o audio para reprodução no player, um audio seguido do outro conforme ordem da fala, até concluir a fala do personagem ou narrador, utilizando a respectiva voz do personagem ou narrador.
+  
+## INTERFACE - GUI ##
+
+Atualmente, o funcionamento da Interface é o seguinte:
+
+1. Programa é Carregado.
+
+2. O usuário seleciona o tipo de narrador desejado, no momento as opções são: 1. Descritivo (Narrador tradicional) ou 2. Escrachado (Narrador irreverente e malicioso). 
+
+3. Usuário digita e envia mensagem de entrada.
+	3.1 Mensagem de texto aparece na interface atrelado ao usuário (com respectiva imagem de avatar e nome)
+
+4. Mensagem do usuário é enviada para processamento e recebimento da resposta da LLM, que efetua a segmentação do texto de resposta do Narrador ou Personagem dependendo da escolha do usuário que pode ser feita através de botão em menu ou conforme interpretação do tipo de texto de entrada (o usuário não percebe esse funcionamento).
+5. Exibição de mensagem de texto segmentada com resposta do narrador ou personagem em texto para acompanhar a segmentação em audio que será gerada em seguida.
+
+6. Audio é processado e gravado em forma de segmentos para evitar audio truncado, mantendo o padrão do texto para manter a coerência.
+
+7. É exibido uma mensagem do personagem ou narrador conténdo o player de aúdio com o respectivo segmento de audio correspondente ao texto do narrador ou personagem.
+
+8. O processo é repetido até concluir a transmissão de cada segmento de texto e audio sempre mantendo a ordem do envio para não mudar a entrega da mensagem.

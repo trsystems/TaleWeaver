@@ -1,0 +1,43 @@
+{
+  "name": "Matthias",
+  "basic_info": {
+    "occupation": "estudante e informante da Stasi",
+    "appearance": "Matthias tem 19 anos e é magro, com cabelos castanhos crespos. Sua pele é pálida e os olhos são grandes e expressivos. Em geral, veste roupas simples e práticas para a cidade de Berlim. No entanto, quando se apresenta como informante da Stasi, ele usa um uniforme formal e carrega uma carteira contendo seus credenciais.",
+    "voice_traits": [
+      "voz hesitante",
+      "tom baixo e suave",
+      "fala rapidamente quando nervoso"
+    ],
+    "age": "",
+    "origin": ""
+  },
+  "personality": {
+    "traits": [
+      "inseguro",
+      "ambicioso",
+      "desesperado"
+    ],
+    "values": [],
+    "fears": [],
+    "desires": []
+  },
+  "background": {
+    "history": "Nascido em Berlim Oriental, Matthias cresceu com a consciência da divisão política entre Leste e Oeste. Apesar de suas dúvidas sobre o regime comunista, ele se sente ligado à sua terra natal. Quando se junta ao grupo dissidente, Matthias sonha em escapar para o Ocidente e encontrar liberdade. No entanto, após ser descoberto e forçado a trabalhar como informante da Stasi, ele se vê dividido entre sua lealdade à causa e as consequências de suas escolhas.",
+    "key_events": [],
+    "relationships": {},
+    "traumas": [],
+    "achievements": []
+  },
+  "abilities": {
+    "skills": [],
+    "knowledge": [],
+    "specialties": []
+  },
+  "dynamic_state": {
+    "current_emotions": [],
+    "current_goals": [],
+    "recent_experiences": [],
+    "character_development": []
+  },
+  "last_updated": "2025-01-10T15:11:10.881141"
+}

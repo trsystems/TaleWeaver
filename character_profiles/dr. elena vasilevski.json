@@ -1,0 +1,43 @@
+{
+  "name": "Dr. Elena Vasilevski",
+  "basic_info": {
+    "occupation": "Astrofísica",
+    "appearance": "In her late fifties, Dr. Vasilevski has an air of distinguished elegance. Her silver hair is often pulled back into a neat bun, with a few stray strands framing her face. Her hazel eyes sparkle with intelligence and determination. She typically wears understated yet professional attire, favoring tailored blouses and trousers in muted colors.",
+    "voice_traits": [
+      "Clear and authoritative",
+      "With a hint of a Russian accent",
+      "Conveying both excitement and caution when discussing her groundbreaking research"
+    ],
+    "age": "",
+    "origin": ""
+  },
+  "personality": {
+    "traits": [
+      "Dedicada",
+      "Intrigued by the unknown",
+      "Resilient"
+    ],
+    "values": [],
+    "fears": [],
+    "desires": []
+  },
+  "background": {
+    "history": "Born in Ukraine, Dr. Elena Vasilevski's fascination with astronomy began at a young age. She pursued her passion at the Lomonosov Moscow State University, where she earned her Ph.D. in Astrophysics. For decades, she studied wormholes and alternate dimensions, driven by an insatiable curiosity about the universe's mysteries.",
+    "key_events": [],
+    "relationships": {},
+    "traumas": [],
+    "achievements": []
+  },
+  "abilities": {
+    "skills": [],
+    "knowledge": [],
+    "specialties": []
+  },
+  "dynamic_state": {
+    "current_emotions": [],
+    "current_goals": [],
+    "recent_experiences": [],
+    "character_development": []
+  },
+  "last_updated": "2025-01-08T03:47:41.009402"
+}

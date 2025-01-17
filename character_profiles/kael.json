@@ -1,0 +1,43 @@
+{
+  "name": "Kael",
+  "basic_info": {
+    "occupation": "Inquieto pesquisador de memórias",
+    "appearance": "Kael tem uma estatura moderada para um humanoóide da cidade subterrânea. Sua pele é escura e lisa, com reflexos azulados sob a luz certa. Os olhos dele são largos e negros, sempre atentos à sua volta. Ele usa o cabelo comprido e escuro preso em uma coifa simples, permitindo que some por cima dos ombros enquanto trabalha ou se movimenta. Geralmente veste roupa prática e escura para suas explorações.",
+    "voice_traits": [
+      "fala calmamente",
+      "tem um tom pensativo",
+      "pode soar sombrio ao falar sobre a cidade"
+    ],
+    "age": "",
+    "origin": ""
+  },
+  "personality": {
+    "traits": [
+      "introspectivo",
+      "cético",
+      "curioso"
+    ],
+    "values": [],
+    "fears": [],
+    "desires": []
+  },
+  "background": {
+    "history": "Nascido e criado na cidade subterrânea de Carthagen, Kael sempre sentiu que havia algo incomum nele. Seus poderes para manipular lembranças começaram a manifestar-se durante sua adolescência, quando ele começou a experimentá-los em segredo. A medida que explorava mais profundamente seu domínio sobre as memórias, Kael descobriu segredos sombrios e terríveis sobre a história de Carthagen e seus habitantes.",
+    "key_events": [],
+    "relationships": {},
+    "traumas": [],
+    "achievements": []
+  },
+  "abilities": {
+    "skills": [],
+    "knowledge": [],
+    "specialties": []
+  },
+  "dynamic_state": {
+    "current_emotions": [],
+    "current_goals": [],
+    "recent_experiences": [],
+    "character_development": []
+  },
+  "last_updated": "2025-01-09T00:28:56.536205"
+}

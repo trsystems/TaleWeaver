@@ -1,0 +1,43 @@
+{
+  "name": "Professor Edwin Wychurst",
+  "basic_info": {
+    "occupation": "Inventor, Roboticist and Engineer at the prestigious Cogwheel Institute of Scientific Research",
+    "appearance": "Edwin is a man in his mid-40s with a slender build and unkempt brown hair. His piercing green eyes often betray a hint of exhaustion from late nights spent in his workshop. He wears round wire-rimmed spectacles perched on the end of his nose, giving him a slightly bookish appearance.",
+    "voice_traits": [
+      "Deliberate",
+      "Authoritative",
+      "Carries a hint of a Lancashire accent"
+    ],
+    "age": "",
+    "origin": ""
+  },
+  "personality": {
+    "traits": [
+      "Perfectionistic",
+      "Introspective",
+      "Passionate about his work"
+    ],
+    "values": [],
+    "fears": [],
+    "desires": []
+  },
+  "background": {
+    "history": "Born into a family of modest means in Manchester, Edwin's innate curiosity drove him to pursue an education in science and engineering. After completing his studies at the University of Edinburgh, he moved to London where he secured a position at the Cogwheel Institute. Over the years, he has risen through the ranks, earning respect for his innovative designs and relentless dedication to advancing technology.",
+    "key_events": [],
+    "relationships": {},
+    "traumas": [],
+    "achievements": []
+  },
+  "abilities": {
+    "skills": [],
+    "knowledge": [],
+    "specialties": []
+  },
+  "dynamic_state": {
+    "current_emotions": [],
+    "current_goals": [],
+    "recent_experiences": [],
+    "character_development": []
+  },
+  "last_updated": "2025-01-08T02:37:07.506421"
+}

@@ -1,0 +1,44 @@
+{
+  "name": "Avó",
+  "basic_info": {
+    "occupation": "Aposentada e ex-colega de teatro",
+    "appearance": "A avó tem pele clara, cabelos brancos e olhos azuis que refletiam a sabedoria de uma vida bem vivida. Usava roupas conservadoras e confortáveis, com toques de cores alegres. Embora já não estivesse em sua melhor forma física, mantinha-se ativa e com um sorriso caloroso.",
+    "voice_traits": [
+      "voz suave e calma",
+      "tom confidencial quando necessário",
+      "capaz de mudar para uma voz mais firme quando defendia seus princípios"
+    ],
+    "age": "",
+    "origin": "",
+    "voice_file": "voices/narrator_voice.wav"
+  },
+  "personality": {
+    "traits": [
+      "sabedora",
+      "muito afetiva",
+      "dura quando necessário"
+    ],
+    "values": [],
+    "fears": [],
+    "desires": []
+  },
+  "background": {
+    "history": "Nascida e criada na pequena cidade onde André passou a infância, a avó sempre manteve segredos sobre sua vida pessoal. Apesar disso, demonstrava amor incondicional por todos da família e era conhecida por suas habilidades no teatro local. Ao longo dos anos, ela se tornou uma figura central na comunidade, mas sempre guardava um mistério em seu passado.",
+    "key_events": [],
+    "relationships": {},
+    "traumas": [],
+    "achievements": []
+  },
+  "abilities": {
+    "skills": [],
+    "knowledge": [],
+    "specialties": []
+  },
+  "dynamic_state": {
+    "current_emotions": [],
+    "current_goals": [],
+    "recent_experiences": [],
+    "character_development": []
+  },
+  "last_updated": "2025-01-16T02:15:09.760351"
+}
