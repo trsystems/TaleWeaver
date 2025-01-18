@@ -28,16 +28,17 @@ TaleWeaver/
 - [x] Configuração inicial do Git
 - [x] Integração com repositório remoto no GitHub
 - [x] Módulos principais organizados
+- [x] Implementação das classes principais no story_manager.py
+  - LLMClient para integração com LMStudio
+  - StoryManager para gerenciamento de histórias
 
 ## Próximos Passos
 
-1. Implementar sistema de menus interativos
-2. Desenvolver integração com LMStudio
-3. Criar sistema de gerenciamento de histórias
-4. Implementar banco de dados para personagens e histórias
-5. Desenvolver sistema de narração
-6. Criar interface de linha de comando
-7. Implementar sistema de geração de vozes
+1. Configurar conexão com banco de dados em database.py
+2. Desenvolver sistema de gerenciamento de personagens
+3. Implementar integração completa com LLM
+4. Criar sistema de narração e geração de voz
+5. Desenvolver interface de linha de comando
 
 ## Como Contribuir
 

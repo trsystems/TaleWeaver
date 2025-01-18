@@ -14,3 +14,6 @@ flake8>=6.0.0
 mypy>=1.0.0
 aiosqlite>=0.20.0
 aiohttp>=3.9.0
+sounddevice>=0.4.6
+numpy==1.22.0
+scipy>=1.11.0
