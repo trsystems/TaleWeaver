@@ -49,7 +49,7 @@ class LLMConfig:
                 {
                     "provider": "local",
                     "model": "lmstudio",
-                    "base_url": "http://localhost:1234/v1"
+                    "base_url": "http://localhost:1234"
                 }
             ]
             

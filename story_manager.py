@@ -66,7 +66,8 @@ class StoryManager:
         if hasattr(llm_config, 'to_dict'):
             llm_config = llm_config.to_dict()
             
-        self.llm_client = await LLMClient(llm_config).__aenter__()
+        self.llm_client = LLMClient(llm_config)
+        await self.llm_client.initialize()
         print("LLMClient inicializado com sucesso!")
 
     async def _verify_tables(self):
@@ -158,11 +159,28 @@ class StoryManager:
             async for response in self.llm_client.generate(prompt):
                 if response.finish_reason == "stop":
                     try:
-                        story_data = json.loads(response.content)
-                        stories.extend(story_data.get("stories", []))
+                        # Tenta extrair JSON da resposta
+                        content = response.content
+                        if content.startswith('{') and content.endswith('}'):
+                            story_data = json.loads(content)
+                            if "stories" in story_data:
+                                stories.extend(story_data["stories"])
+                            else:
+                                # Se não tiver o campo stories, trata como uma única história
+                                stories.append({
+                                    "title": story_data.get("title", "História sem título"),
+                                    "summary": story_data.get("content", "Resumo indisponível"),
+                                    "characters": story_data.get("characters", []),
+                                    "locations": story_data.get("locations", [])
+                                })
                     except json.JSONDecodeError:
-                        logger.error("Erro ao decodificar resposta do LLM")
-                        continue
+                        # Se não for JSON válido, trata como texto puro
+                        stories.append({
+                            "title": f"História {len(stories) + 1} - {genre}",
+                            "summary": response.content,
+                            "characters": [],
+                            "locations": []
+                        })
                         
             return stories if stories else self._get_fallback_stories(genre)
             
