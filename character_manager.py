@@ -43,7 +43,7 @@ class CharacterManager:
         tables = [
             "characters",
             "character_relationships",
-            "character_memories"
+            "memories"
         ]
         
         for table in tables:
@@ -200,7 +200,7 @@ class CharacterManager:
     async def add_memory(self, character_id: int, memory: Dict[str, Any]) -> None:
         """Adiciona uma memória ao personagem"""
         query = """
-            INSERT INTO character_memories (character_id, memory_type, content)
+            INSERT INTO memories (character_id, memory_type, content)
             VALUES (?, ?, ?)
         """
         params = (
@@ -219,7 +219,7 @@ class CharacterManager:
     async def get_memories(self, character_id: int) -> List[Dict[str, Any]]:
         """Obtém as memórias de um personagem"""
         query = """
-            SELECT * FROM character_memories
+            SELECT * FROM memories
             WHERE character_id = ?
             ORDER BY timestamp DESC
         """

@@ -1,0 +1,55 @@
+{
+    "database": {
+        "path": "data",
+        "main_db": "tale_weaver.db",
+        "cache_enabled": true,
+        "cache_ttl": 300
+    },
+    "llm": {
+        "model": "lmstudio",
+        "provider": "local",
+        "temperature": 0.7,
+        "max_tokens": 1000,
+        "presence_penalty": 0.0,
+        "frequency_penalty": 0.0,
+        "base_url": "http://localhost:1234/v1",
+        "api_key": "lm-studio",
+        "context_window": 4096,
+        "memory_size": 5,
+        "max_cost_per_hour": 0.0,
+        "fallback_models": [
+            {
+                "provider": "local",
+                "model": "lmstudio",
+                "base_url": "http://localhost:1234/v1"
+            }
+        ]
+    },
+    "audio": {
+        "voice_system": "xtts2",
+        "voice_dir": "voices",
+        "sample_rate": 24000,
+        "volume": 1.0
+    },
+    "system": {
+        "log_level": "INFO",
+        "max_log_files": 10,
+        "max_log_size": 10485760,
+        "auto_save_interval": 300
+    },
+    "characters": {
+        "max_characters": 20,
+        "default_voice": "narrator_voice.wav",
+        "voice_dir": "voices"
+    },
+    "logging": {
+        "enabled_modules": {
+            "main": true,
+            "database": true,
+            "story": true,
+            "character": true,
+            "config": true
+        },
+        "default_level": "INFO"
+    }
+}

@@ -55,7 +55,7 @@ A tensão política permeava todos os aspectos da vida em Berlim Oriental durant
 Exemplo de informações obtidas com o menu (sistema de LEMBRANÇAS):
 
 SISTEMA DE LEMBRANÇAS
-	Acessado via menu interativo: "3. Ver lembranças" pelo terminal ou seleção de botão via interface, Grava dados no arquivo character_memories.db em formato SQLite format 3.
+	Acessado via menu interativo: "3. Ver lembranças" pelo terminal ou seleção de botão via interface, Grava dados no arquivo memories.db em formato SQLite format 3.
 	
 	O sistema de lembranças recupera "memórias" dos personagens em um formato mais estruturado e explícito.Ele guarda de maneira individual as memórias de interações do usuário com os personagens para que possam ser reculperadas após o encerramento do programa, organizando as em formato decrecente de acordo com o horário da interação, estruturando o registro da seguinte forma:
 	
@@ -148,4 +148,3 @@ RESET:
  CRIE DE INICIO UMA DESCRIÇÃO DE PROJETO COM CADA ETAPA DE IMPLANTAÇÃO QUE IREMOS SEGUIR, DESCREVENDO EM DETALHES O PROJETO COM BASE NESSE DOCUMENTO E CONSIDERE A PARTE DA FALA DOS PERSONAGENS COMO UM PONTO IMPORTANTE ENTÃO CONSTRUA DE FORMA QUE NÃO SEJA CRIADO AUDIOS GRANDES, MAS QUE ELES POSSAM SER SEGMENTADOS PARA NÃO PERDER QUALIDADE OU PROBLEMAS COM GERAÇÃO DE TOKENS, OS AUDIOS DEVERÃO SER GERADOS ATRAVES DO PASTA VOICES COM O XTTS E GERADO APÓS CADA FALA DOSPERSONAGENS E NARRADOR.
  
  PODE UTILIZAR O PROJETO: https://github.com/trsystems/TaleWeaver PARA SE BASEAR e também no arquivo de modelo em additional_files\additional_files.py
-

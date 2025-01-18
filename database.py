@@ -96,6 +96,56 @@ class AsyncDatabaseManager:
                 timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(character_id) REFERENCES characters(id)
             )
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS story_scenes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                story_context_id INTEGER NOT NULL,
+                scene_order INTEGER NOT NULL,
+                content TEXT NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(story_context_id) REFERENCES story_context(id)
+            )
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS story_characters (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                story_context_id INTEGER NOT NULL,
+                character_id INTEGER NOT NULL,
+                role TEXT NOT NULL,
+                relationships TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(story_context_id) REFERENCES story_context(id),
+                FOREIGN KEY(character_id) REFERENCES characters(id)
+            )
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS story_locations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                story_context_id INTEGER NOT NULL,
+                location_id INTEGER NOT NULL,
+                description TEXT,
+                scene_connections TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(story_context_id) REFERENCES story_context(id),
+                FOREIGN KEY(location_id) REFERENCES locations(id)
+            )
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS character_relationships (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                source_character_id INTEGER NOT NULL,
+                target_character_id INTEGER NOT NULL,
+                relationship_type TEXT NOT NULL,
+                description TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(source_character_id) REFERENCES characters(id),
+                FOREIGN KEY(target_character_id) REFERENCES characters(id)
+            )
             """
         ]
         

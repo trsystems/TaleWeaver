@@ -30,21 +30,18 @@ class TaleWeaverApp:
             # Configura logger
             from logger import setup_logger
             self.logger = setup_logger(self.config)
-            self.logger.info("Inicializando TaleWeaver...")
+            self.logger.get_logger("main").info("Inicializando TaleWeaver...")
             
             # Inicializa banco de dados
             self.db = AsyncDatabaseManager(self.config)
             await self.db.initialize()
             
-            # Inicializa gerenciador de histórias
-            self.story_manager = StoryManager(self.config, self.db)
-            await self.story_manager.initialize()
-            
             # Inicializa gerenciador de personagens
             await self.config.initialize_character_manager(self.db)
             
-            # Inicializa cliente LLM
-            await self.story_manager.initialize_llm_client()
+            # Inicializa gerenciador de histórias
+            self.story_manager = StoryManager(self.config, self.db)
+            await self.story_manager.initialize()
             
             # Inicializa sistema de voz
             await self.config.initialize_voice_system()

@@ -19,90 +19,9 @@ from config import ConfigManager
 from database import AsyncDatabaseManager
 from typing import Any
 from datetime import datetime
+from llm_client import LLMClient, LLMResponse
 
 logger = logging.getLogger(__name__)
-
-class LLMClient:
-    """Cliente para integração com LMStudio"""
-    
-    def __init__(self, base_url: str = "http://localhost:1234"):
-        self.base_url = base_url
-        self.session = aiohttp.ClientSession()
-        self.cache: Dict[str, Dict[str, Any]] = {}
-        
-    async def close(self):
-        """Fecha a conexão com o LMStudio"""
-        await self.session.close()
-        
-    async def generate_story(self, genre: str, language: str = "pt-BR") -> Dict[str, Any]:
-        """Gera uma nova história com base no gênero"""
-        cache_key = f"story_{genre}_{language}"
-        
-        # Verifica cache
-        if cache_key in self.cache:
-            return self.cache[cache_key]
-            
-        prompt = f"""
-        Crie 3 opções de histórias no gênero {genre}.
-        Cada história deve ter:
-        - Título
-        - Resumo de 3 parágrafos
-        - 3 personagens principais com nomes e descrições
-        - 2 locais principais
-        
-        Idioma: {language}
-        """
-        
-        try:
-            async with self.session.post(
-                f"{self.base_url}/v1/completions",
-                json={
-                    "prompt": prompt,
-                    "max_tokens": 1500,
-                    "temperature": 0.7
-                }
-            ) as response:
-                if response.status != 200:
-                    raise Exception(f"Erro na requisição: {response.status}")
-                    
-                data = await response.json()
-                result = self._parse_story_response(data)
-                
-                # Armazena no cache
-                self.cache[cache_key] = result
-                return result
-                
-        except Exception as e:
-            print(f"Erro ao gerar história: {e}")
-            return {
-                "error": str(e),
-                "stories": self._get_fallback_stories(genre)
-            }
-            
-    def _parse_story_response(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Processa a resposta do LLM"""
-        try:
-            content = data["choices"][0]["text"]
-            return json.loads(content)
-        except Exception as e:
-            print(f"Erro ao processar resposta: {e}")
-            return {"error": str(e)}
-            
-    def _get_fallback_stories(self, genre: str) -> List[Dict[str, str]]:
-        """Retorna histórias padrão em caso de erro"""
-        return [
-            {
-                "title": f"História Padrão 1 - {genre}",
-                "summary": "Resumo padrão da história 1...",
-                "characters": [
-                    {"name": "Personagem 1", "description": "Descrição padrão"},
-                    {"name": "Personagem 2", "description": "Descrição padrão"}
-                ],
-                "locations": [
-                    {"name": "Local 1", "description": "Descrição padrão"}
-                ]
-            }
-        ]
 
 class StoryManager:
     def __init__(self, config: ConfigManager, db: AsyncDatabaseManager):
@@ -112,7 +31,7 @@ class StoryManager:
         self.current_story: Optional[Dict[str, Any]] = None
         self.current_scene: Optional[Dict[str, Any]] = None
         self.initialized = False
-        self.llm: Optional[LLMClient] = None
+        self.llm_client: Optional[LLMClient] = None
 
     async def initialize(self):
         """Inicializa o StoryManager"""
@@ -125,15 +44,29 @@ class StoryManager:
         # Verifica se as tabelas necessárias existem
         await self._verify_tables()
         
-        # Inicializa cliente LLM
-        await self.initialize_llm_client()
+        # Inicializa cliente LLM com as configurações corretas
+        llm_config = self.config.get('llm')
+        if not llm_config:
+            raise ValueError("Configurações LLM não encontradas")
+        await self.initialize_llm_client(llm_config)
         
         self.initialized = True
         print("StoryManager inicializado com sucesso!")
 
-    async def initialize_llm_client(self):
-        """Inicializa o cliente LLM"""
-        self.llm = LLMClient(self.config.get("llm_base_url", "http://localhost:1234"))
+    async def initialize_llm_client(self, llm_config: Dict[str, Any]):
+        """Inicializa o cliente LLM com as configurações fornecidas
+        
+        Args:
+            llm_config: Dicionário com as configurações do LLM
+        """
+        if not llm_config:
+            raise ValueError("Configurações LLM não fornecidas")
+            
+        # Convert LLMConfig to dictionary if needed
+        if hasattr(llm_config, 'to_dict'):
+            llm_config = llm_config.to_dict()
+            
+        self.llm_client = await LLMClient(llm_config).__aenter__()
         print("LLMClient inicializado com sucesso!")
 
     async def _verify_tables(self):
@@ -214,16 +147,27 @@ class StoryManager:
         logger.info(f"Gerando opções de história para o gênero: {genre}")
         
         try:
-            result = await self.llm.generate_story(genre, self.config.get("language", "pt-BR"))
+            # Gera prompt estruturado
+            prompt = await self.llm_client.generate_story_prompt({
+                "genre": genre,
+                "language": self.config.get("language", "pt-BR")
+            })
             
-            if "error" in result:
-                print(f"Erro ao gerar histórias: {result['error']}")
-                return self._get_fallback_stories(genre)
-                
-            return result.get("stories", self._get_fallback_stories(genre))
+            # Gera histórias
+            stories = []
+            async for response in self.llm_client.generate(prompt):
+                if response.finish_reason == "stop":
+                    try:
+                        story_data = json.loads(response.content)
+                        stories.extend(story_data.get("stories", []))
+                    except json.JSONDecodeError:
+                        logger.error("Erro ao decodificar resposta do LLM")
+                        continue
+                        
+            return stories if stories else self._get_fallback_stories(genre)
             
         except Exception as e:
-            print(f"Erro inesperado ao gerar histórias: {e}")
+            logger.error(f"Erro ao gerar histórias: {e}")
             return self._get_fallback_stories(genre)
             
     def _get_fallback_stories(self, genre: str) -> List[Dict[str, str]]:
@@ -355,6 +299,9 @@ class StoryManager:
 
     async def close(self) -> None:
         """Fecha todas as conexões e recursos"""
-        if self.llm:
-            await self.llm.close()
-            logger.info("Conexão LLM fechada com sucesso")
+        if self.llm_client:
+            try:
+                await self.llm_client.__aexit__(None, None, None)
+                logger.info("Conexão LLM fechada com sucesso")
+            except Exception as e:
+                logger.error(f"Erro ao fechar LLMClient: {e}")

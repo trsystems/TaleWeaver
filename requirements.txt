@@ -1,4 +1,6 @@
 openai>=1.0.0
+anthropic>=0.7.0
+cohere>=4.0.0
 sqlalchemy>=2.0.0
 TTS>=0.22.0
 torch>=2.1.0

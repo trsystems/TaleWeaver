@@ -26,12 +26,54 @@ class DatabaseConfig:
 @dataclass
 class LLMConfig:
     model: str = "lmstudio"
+    provider: str = "local"  # local, openai, anthropic, etc
     temperature: float = 0.7
     max_tokens: int = 1000
     presence_penalty: float = 0.0
     frequency_penalty: float = 0.0
     base_url: str = "http://localhost:1234/v1"
     api_key: str = "lm-studio"
+    context_window: int = 4096  # Tamanho máximo do contexto
+    memory_size: int = 5  # Número de interações a manter na memória
+    max_cost_per_hour: float = 0.0  # Limite de custo por hora
+    fallback_models: list[dict[str, Any]] = None  # Modelos de fallback
+    
+    def __post_init__(self):
+        # Validate base_url format
+        if not self.base_url.startswith(('http://', 'https://')):
+            raise ValueError("base_url must start with http:// or https://")
+            
+        # Initialize fallback models with proper typing
+        if self.fallback_models is None:
+            self.fallback_models = [
+                {
+                    "provider": "local",
+                    "model": "lmstudio",
+                    "base_url": "http://localhost:1234/v1"
+                }
+            ]
+            
+        # Ensure all fallback models have required fields
+        for model in self.fallback_models:
+            if not all(key in model for key in ["provider", "model", "base_url"]):
+                raise ValueError("Fallback models must have provider, model and base_url fields")
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert config to dictionary with proper serialization"""
+        return {
+            "model": self.model,
+            "provider": self.provider,
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+            "presence_penalty": self.presence_penalty,
+            "frequency_penalty": self.frequency_penalty,
+            "base_url": self.base_url.rstrip('/'),
+            "api_key": self.api_key,
+            "context_window": self.context_window,
+            "memory_size": self.memory_size,
+            "max_cost_per_hour": self.max_cost_per_hour,
+            "fallback_models": self.fallback_models
+        }
 
 @dataclass
 class AudioConfig:
