@@ -31,17 +31,25 @@ class LLMConfig:
     max_tokens: int = 1000
     presence_penalty: float = 0.0
     frequency_penalty: float = 0.0
-    base_url: str = "http://localhost:1234/v1"
+    base_url: str = "http://localhost:1234"
     api_key: str = "lm-studio"
     context_window: int = 4096  # Tamanho máximo do contexto
     memory_size: int = 5  # Número de interações a manter na memória
     max_cost_per_hour: float = 0.0  # Limite de custo por hora
     fallback_models: list[dict[str, Any]] = None  # Modelos de fallback
+    max_story_length: int = 2000  # Tamanho máximo de histórias em tokens
+    min_story_length: int = 500  # Tamanho mínimo de histórias em tokens
+    json_response_retries: int = 3  # Número de tentativas para obter resposta JSON válida
+    json_response_timeout: int = 30  # Timeout em segundos para respostas JSON
     
     def __post_init__(self):
         # Validate base_url format
         if not self.base_url.startswith(('http://', 'https://')):
             raise ValueError("base_url must start with http:// or https://")
+            
+        # Validate story length constraints
+        if self.min_story_length >= self.max_story_length:
+            raise ValueError("min_story_length must be less than max_story_length")
             
         # Initialize fallback models with proper typing
         if self.fallback_models is None:
@@ -49,7 +57,8 @@ class LLMConfig:
                 {
                     "provider": "local",
                     "model": "lmstudio",
-                    "base_url": "http://localhost:1234"
+                    "base_url": "http://localhost:1234",
+                    "json_support": True
                 }
             ]
             
@@ -57,6 +66,10 @@ class LLMConfig:
         for model in self.fallback_models:
             if not all(key in model for key in ["provider", "model", "base_url"]):
                 raise ValueError("Fallback models must have provider, model and base_url fields")
+            
+            # Add json_support flag if not present
+            if "json_support" not in model:
+                model["json_support"] = False
 
     def to_dict(self) -> dict[str, Any]:
         """Convert config to dictionary with proper serialization"""
@@ -72,7 +85,11 @@ class LLMConfig:
             "context_window": self.context_window,
             "memory_size": self.memory_size,
             "max_cost_per_hour": self.max_cost_per_hour,
-            "fallback_models": self.fallback_models
+            "fallback_models": self.fallback_models,
+            "max_story_length": self.max_story_length,
+            "min_story_length": self.min_story_length,
+            "json_response_retries": self.json_response_retries,
+            "json_response_timeout": self.json_response_timeout
         }
 
 @dataclass

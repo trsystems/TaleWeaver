@@ -1,0 +1,15 @@
+{
+  "model": "lmstudio",
+  "messages": [
+    {
+      "role": "system",
+      "content": "Você é um assistente criativo especializado em criar histórias envolventes e bem estruturadas."
+    },
+    {
+      "role": "user", 
+      "content": "Crie uma história curta de fantasia"
+    }
+  ],
+  "temperature": 0.7,
+  "max_tokens": 2000
+}
