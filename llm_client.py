@@ -39,6 +39,7 @@ class LLMClient:
         self.retry_delay = config.get('retry_delay', 5)
         self.keepalive_timeout = 300
         self.heartbeat_interval = 30
+        self.language = config.get('language', 'pt')
 
     async def initialize(self):
         if not self._session:
@@ -91,30 +92,30 @@ class LLMClient:
         payload = {
             "model": self.model,
             "messages": [
-                {"role": "system", "content": """Você é um assistente criativo especializado em criar histórias envolventes e bem estruturadas. 
+                {"role": "system", "content": f"""Você é um assistente criativo especializado em criar histórias envolventes e bem estruturadas. 
 SEMPRE retorne APENAS um JSON válido e bem formatado, sem nenhum texto adicional.
 
 FORMATO EXATO REQUERIDO:
-{
+{{
   "title": "Título criativo e descritivo",
   "summary": "Resumo narrativo de 2-3 frases que conta a história principal",
   "characters": [
-    {
+    {{
       "name": "Nome completo do personagem",
       "description": "Descrição física e psicológica detalhada"
-    }
+    }}
   ],
   "locations": [
-    {
+    {{
       "name": "Nome descritivo do local",
       "description": "Descrição atmosférica e detalhes importantes"
-    }
+    }}
   ]
-}
+}}
 
 REGRAS ESTRITAS:
 1. O JSON DEVE ser válido e bem formatado
-2. O JSON DEVE começar com { e terminar com }
+2. O JSON DEVE começar com {{ e terminar com }}
 3. O JSON DEVE usar apenas aspas duplas
 4. O JSON NÃO pode conter quebras de linha ou espaços extras
 5. O JSON NÃO pode conter texto fora da estrutura
@@ -123,6 +124,7 @@ REGRAS ESTRITAS:
 8. Cada local DEVE ter name e description
 9. NUNCA inclua texto fora do JSON
 10. NUNCA inclua comentários ou explicações
+11. TODAS as respostas DEVEM estar no idioma {self.language}
 
 Se você não seguir estas regras exatamente, o sistema falhará."""},
                 {"role": "user", "content": prompt}

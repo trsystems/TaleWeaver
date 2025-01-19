@@ -41,8 +41,12 @@ class LLMConfig:
     min_story_length: int = 500  # Tamanho mínimo de histórias em tokens
     json_response_retries: int = 3  # Número de tentativas para obter resposta JSON válida
     json_response_timeout: int = 30  # Timeout em segundos para respostas JSON
+    language: str = "pt"  # Idioma padrão para respostas (pt = português)
     
     def __post_init__(self):
+        # Validate language
+        if self.language not in ["pt", "en", "es"]:
+            raise ValueError("language must be one of: pt, en, es")
         # Validate base_url format
         if not self.base_url.startswith(('http://', 'https://')):
             raise ValueError("base_url must start with http:// or https://")
