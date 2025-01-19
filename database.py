@@ -30,6 +30,7 @@ class AsyncDatabaseManager:
         self.cache: Dict[str, Any] = {}
         self.cache_enabled = self.config.get('database.cache_enabled', True)
         self.cache_ttl = self.config.get('database.cache_ttl', 300)
+        self.initialized = False
         
     async def initialize(self) -> None:
         """Inicializa o banco de dados"""
@@ -37,7 +38,13 @@ class AsyncDatabaseManager:
             db_path = self._get_db_path()
             self.connection = await aiosqlite.connect(db_path)
             self.connection.row_factory = aiosqlite.Row
+            
+            # Cria todas as tabelas primeiro
             await self._create_tables()
+            
+            # Depois verifica e atualiza a tabela characters
+            await self._verify_character_table()
+            
             print(f"Banco de dados inicializado em: {db_path}")
         except Exception as e:
             print(f"Erro ao inicializar banco de dados: {e}")
@@ -54,7 +61,7 @@ class AsyncDatabaseManager:
         return str(Path(db_dir) / db_name)
 
     async def _create_tables(self) -> None:
-        """Cria as tabelas necessárias"""
+        """Cria as tabelas necessárias e aplica migrações"""
         tables = [
             """
             CREATE TABLE IF NOT EXISTS story_context (
@@ -70,9 +77,12 @@ class AsyncDatabaseManager:
                 name TEXT NOT NULL,
                 description TEXT,
                 personality TEXT,
+                role TEXT,
                 relationships TEXT,
                 voice_file TEXT,
                 is_favorite BOOLEAN DEFAULT 0,
+                is_player BOOLEAN DEFAULT 0,
+                is_narrator BOOLEAN DEFAULT 0,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
@@ -155,6 +165,66 @@ class AsyncDatabaseManager:
             await self.connection.commit()
         except Exception as e:
             print(f"Erro ao criar tabelas: {e}")
+            raise
+
+    async def _verify_character_table(self) -> None:
+        """Verifica e atualiza a tabela characters se necessário"""
+        try:
+            # Verifica se já foi inicializado
+            if hasattr(self, '_character_table_verified') and self._character_table_verified:
+                return
+                
+            # Verifica se a tabela characters existe
+            table_exists = await self.execute_query(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='characters'"
+            )
+            
+            if table_exists:
+                # Verifica se a coluna is_player existe
+                result = await self.execute_query(
+                    "PRAGMA table_info(characters)"
+                )
+                
+                columns = [row['name'] for row in result]
+                
+                # Log current schema state
+                print(f"Schema atual da tabela characters: {columns}")
+                
+                # Add columns only if they don't exist
+                for column, col_type in [
+                    ('is_player', 'BOOLEAN DEFAULT 0'),
+                    ('is_narrator', 'BOOLEAN DEFAULT 0'),
+                    ('voice', 'TEXT')
+                ]:
+                    if column not in columns:
+                        try:
+                            await self.connection.execute(
+                                f"ALTER TABLE characters ADD COLUMN {column} {col_type}"
+                            )
+                            print(f"Coluna {column} adicionada com sucesso")
+                            # Log schema change
+                            print(f"Schema atualizado: {column} ({col_type}) adicionado")
+                        except Exception as e:
+                            print(f"Warning: Could not add column {column}: {str(e)}")
+                            # Log detailed error
+                            print(f"Detalhes do erro ao adicionar coluna {column}:")
+                            print(f"Schema atual: {columns}")
+                            print(f"Erro completo: {e}")
+                            continue
+                    
+                await self.connection.commit()
+                self._character_table_verified = True
+                
+                # Log final schema verification
+                final_schema = await self.execute_query("PRAGMA table_info(characters)")
+                print(f"Schema final verificado: {[row['name'] for row in final_schema]}")
+        except Exception as e:
+            print(f"Erro ao verificar/atualizar tabela characters: {e}")
+            # Log full error details
+            print(f"Detalhes do erro:")
+            print(f"Tipo: {type(e)}")
+            print(f"Args: {e.args}")
+            print(f"Traceback: {e.__traceback__}")
             raise
 
     async def execute_query(self, query: str, params: Tuple = (), use_cache: bool = True) -> List[Dict[str, Any]]:

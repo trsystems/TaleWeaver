@@ -1,7 +1,7 @@
 {
     "database": {
         "path": "data",
-        "main_db": "tale_weaver.db",
+        "main_db": "taleweaver.db",
         "cache_enabled": true,
         "cache_ttl": 300
     },

@@ -1,0 +1,9 @@
+@echo off
+echo Stopping all Python processes...
+taskkill /f /im python.exe
+
+echo Resetting database...
+python tests/utilities/reset_db.py
+
+echo Starting TaleWeaver...
+python main.py

@@ -139,3 +139,26 @@ class VoiceSystem:
         except Exception as e:
             print(f"Erro ao fechar sistema de voz: {e}")
             raise
+
+    async def set_narrator_voice(self, voice_file: str) -> None:
+        """
+        Configura a voz do narrador.
+        
+        Args:
+            voice_file: Caminho do arquivo de voz do narrador
+        """
+        try:
+            # Armazena a configuração da voz do narrador
+            self.voice_profiles['narrator'] = {
+                'file': self.voice_dir / voice_file,
+                'config': {
+                    'pitch': 0.0,
+                    'speed': 1.0,
+                    'emphasis': 1.0
+                }
+            }
+            print(f"Voz do narrador configurada: {voice_file}")
+            
+        except Exception as e:
+            print(f"Erro ao configurar voz do narrador: {e}")
+            raise

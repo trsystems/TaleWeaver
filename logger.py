@@ -64,6 +64,31 @@ class TaleWeaverLogger:
                 handler.close()
                 logger.removeHandler(handler)
 
+    def debug(self, module: str, message: str) -> None:
+        """Log de nível DEBUG"""
+        logger = self.get_logger(module)
+        logger.debug(message)
+
+    def info(self, module: str, message: str) -> None:
+        """Log de nível INFO"""
+        logger = self.get_logger(module)
+        logger.info(message)
+
+    def warning(self, module: str, message: str) -> None:
+        """Log de nível WARNING"""
+        logger = self.get_logger(module)
+        logger.warning(message)
+
+    def error(self, module: str, message: str) -> None:
+        """Log de nível ERROR"""
+        logger = self.get_logger(module)
+        logger.error(message)
+
+    def critical(self, module: str, message: str) -> None:
+        """Log de nível CRITICAL"""
+        logger = self.get_logger(module)
+        logger.critical(message)
+
 def setup_logger(config: ConfigManager) -> TaleWeaverLogger:
     """Função factory para criar e configurar o logger principal"""
     return TaleWeaverLogger(config)

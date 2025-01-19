@@ -1,0 +1,46 @@
+Project Evolution
+1. Visão Geral
+Descrição completa do projeto TaleWeaver, incluindo objetivos e funcionalidades principais.
+
+2. Arquitetura do Sistema
+2.1 Diagrama de Arquitetura
+Descrição detalhada da estrutura modular do sistema.
+
+2.2 Módulos Principais
+Core
+Narration
+Characters
+Dialogue
+Memory
+Voice
+Story
+3. Guia de Instalação
+Passo a passo detalhado para configurar o ambiente de desenvolvimento.
+
+4. Exemplos de Uso
+Demonstrações práticas com screenshots e explicações.
+
+5. API Reference
+Documentação completa da API pública do sistema.
+
+6. Roadmap
+Planejamento de desenvolvimento e novas funcionalidades.
+
+7. Contribuição
+Guia para contribuidores, incluindo padrões de código e processo de pull request.
+
+8. Licença
+Detalhes sobre a licença do projeto.
+
+9. Funcionalidades Adicionais
+9.1 Reset de História
+Descrição completa da funcionalidade de reset.
+
+9.2 Submenu de História
+Detalhes sobre:
+
+Resumo da história
+Contexto atual
+Visualização de interações
+9.3 Manutenção de Contexto Completo
+Explicação do sistema de sincronização com a LLM.

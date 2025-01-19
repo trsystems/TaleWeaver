@@ -36,30 +36,62 @@ class TaleWeaverApp:
             
             # Inicializa banco de dados
             self.db = AsyncDatabaseManager(self.config)
+            if not self.db:
+                raise ValueError("Falha ao criar instância do banco de dados")
             await self.db.initialize()
+            print("Banco de dados inicializado com sucesso")
             
             # Inicializa gerenciador de personagens
+            print("Inicializando gerenciador de personagens...")
             await self.config.initialize_character_manager(self.db)
+            print("Gerenciador de personagens inicializado")
             
             # Inicializa gerenciador de histórias
+            print("Inicializando gerenciador de histórias...")
             self.story_manager = StoryManager(self.config, self.db)
+            if not self.story_manager:
+                raise ValueError("Falha ao criar gerenciador de histórias")
             await self.story_manager.initialize()
+            print("Gerenciador de histórias inicializado")
             
             # Inicializa sistema de voz
+            print("Inicializando sistema de voz...")
             await self.config.initialize_voice_system()
+            print("Sistema de voz inicializado")
             
             # Inicializa sistema de narradores
+            print("Inicializando sistema de narradores...")
             self.narrator_system = NarratorSystem(self.config)
+            if not self.narrator_system:
+                raise ValueError("Falha ao criar sistema de narradores")
             await self.narrator_system.initialize()
-            await self.narrator_system.set_narrator('descriptive')  # Narrador padrão
+            print("Sistema de narradores inicializado")
+            
+            # Configura narrador padrão
+            print("Configurando narrador padrão...")
+            await self.narrator_system.set_narrator('descriptive')
+            print("Narrador configurado com sucesso")
             
             # Verifica se há história em andamento
+            print("Verificando história atual...")
             self.current_story = await self.story_manager.get_current_story()
+            if self.current_story:
+                print(f"História atual: {self.current_story.get('summary', 'Sem resumo')}")
+            else:
+                print("Nenhuma história ativa encontrada")
             
             self.running = True
             print("TaleWeaver inicializado com sucesso!")
         except Exception as e:
-            print(f"Erro ao inicializar TaleWeaver: {e}")
+            print(f"\nERRO CRÍTICO ao inicializar TaleWeaver: {e}")
+            print("Detalhes do erro:")
+            print(f"- Tipo: {type(e).__name__}")
+            print(f"- Mensagem: {str(e)}")
+            print("\nEstado do sistema antes do erro:")
+            print(f"- Banco de dados: {'OK' if self.db else 'Falha'}")
+            print(f"- Gerenciador de histórias: {'OK' if self.story_manager else 'Falha'}")
+            print(f"- Sistema de narradores: {'OK' if self.narrator_system else 'Falha'}")
+            print(f"- Sistema de voz: {'OK' if hasattr(self.config, 'voice_system') else 'Falha'}")
             sys.exit(1)
 
 
@@ -117,9 +149,52 @@ class TaleWeaverApp:
     async def _start_new_story(self) -> None:
         """Inicia uma nova história"""
         try:
+            # Cria a nova história
             self.current_story = await self.story_manager.create_new_story()
+            
+            # Cria os personagens principais
+            await self._create_main_characters()
+            
+            # Cria o personagem do player
+            await self._create_player_character()
+            
+            # Inicia a interação
+            await self._interact_with_characters()
+            
         except Exception as e:
             print(f"Erro ao criar nova história: {e}")
+
+    async def _create_main_characters(self) -> None:
+        """Cria os personagens principais da história"""
+        if not self.current_story or not self.config.character_manager:
+            return
+            
+        for character_data in self.current_story.get('characters', []):
+            await self.config.character_manager.create_character(
+                name=character_data['name'],
+                role=character_data['role'],
+                description=character_data['description'],
+                personality=character_data.get('personality', 'Personalidade padrão'),
+                is_player=False
+            )
+
+    async def _create_player_character(self) -> None:
+        """Cria o personagem do jogador"""
+        if not self.config.character_manager:
+            return
+            
+        player_name = input("\nDigite o nome do seu personagem: ")
+        player_role = "Player"
+        player_desc = "O protagonista controlado pelo jogador"
+        player_personality = input("Descreva a personalidade do seu personagem: ")
+        
+        await self.config.character_manager.create_character(
+            name=player_name,
+            role=player_role,
+            description=player_desc,
+            personality=player_personality,
+            is_player=True
+        )
 
     async def _continue_story(self) -> None:
         """Continua uma história existente"""

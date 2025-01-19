@@ -89,3 +89,9 @@ class NarratorSystem:
         
         self.select_narrator(narrator_type)
         print(f"Narrador configurado para: {self.narrators[narrator_type]['name']}")
+        
+        # Atualiza o sistema de voz com o novo narrador
+        if hasattr(self.config, 'voice_system'):
+            await self.config.voice_system.set_narrator_voice(
+                self.narrators[narrator_type]['voice']
+            )

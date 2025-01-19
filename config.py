@@ -221,31 +221,27 @@ class ConfigManager:
         except KeyError:
             return False
 
-    async def initialize_voice_system(self) -> None:
+    async def initialize_voice_system(self):
         """Inicializa o sistema de voz"""
-        try:
-            from voice_system import VoiceSystem
-            
-            # Verifica se o diretório de vozes existe
-            voice_dir = Path(self.get("audio.voice_dir", "voices"))
-            if not voice_dir.exists():
-                voice_dir.mkdir(parents=True)
-            
-            # Inicializa o sistema de voz
-            self.voice_system = VoiceSystem(
-                voice_dir=voice_dir,
-                sample_rate=self.get("audio.sample_rate", 24000),
-                volume=self.get("audio.volume", 1.0)
-            )
-            
-            # Configura perfil de voz do narrador
-            await self.voice_system.add_voice_profile(
-                profile_name="narrator",
-                voice_file="narrator_voice.wav"
-            )
-            
-            print("Sistema de voz inicializado com sucesso!")
-            
-        except Exception as e:
-            print(f"Erro ao inicializar sistema de voz: {e}")
-            raise
+        from voice_system import VoiceSystem
+        
+        # Verifica se o diretório de vozes existe
+        voice_dir = Path(self.get("audio.voice_dir", "voices"))
+        if not voice_dir.exists():
+            voice_dir.mkdir(parents=True)
+        
+        # Inicializa o sistema de voz
+        self.voice_system = VoiceSystem(
+            voice_dir=voice_dir,
+            sample_rate=self.get("audio.sample_rate", 24000),
+            volume=self.get("audio.volume", 1.0)
+        )
+        
+        # Configura perfil de voz do narrador
+        await self.voice_system.add_voice_profile(
+            profile_name="narrator",
+            voice_file="narrator_voice.wav"
+        )
+        
+        print("Sistema de voz inicializado com sucesso!")
+        return self.voice_system

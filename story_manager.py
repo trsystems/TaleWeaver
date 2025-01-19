@@ -13,25 +13,25 @@ incluindo:
 import asyncio
 import json
 import aiohttp
-import logging
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union, Any
 from config import ConfigManager
+from logger import TaleWeaverLogger
 from database import AsyncDatabaseManager
-from typing import Any
 from datetime import datetime
 from llm_client import LLMClient, LLMResponse
-
-logger = logging.getLogger(__name__)
+from dialogue_system import DialogueSystem
 
 class StoryManager:
     def __init__(self, config: ConfigManager, db: AsyncDatabaseManager):
         self.config = config
         self.db = db
+        self.logger = TaleWeaverLogger(config)
         self.genres = {}
         self.current_story: Optional[Dict[str, Any]] = None
         self.current_scene: Optional[Dict[str, Any]] = None
         self.initialized = False
         self.llm_client: Optional[LLMClient] = None
+        self.dialogue_system: Optional[DialogueSystem] = None
         self.active_story_id: Optional[int] = None  # ID da história ativa
         self.player_character: Optional[Dict[str, Any]] = None  # Personagem do jogador
 
@@ -51,6 +51,10 @@ class StoryManager:
         if not llm_config:
             raise ValueError("Configurações LLM não encontradas")
         await self.initialize_llm_client(llm_config)
+        
+        # Inicializa sistema de diálogo
+        self.dialogue_system = DialogueSystem(self.config, self.db)
+        await self.dialogue_system.initialize()
         
         self.initialized = True
         print("StoryManager inicializado com sucesso!")
@@ -146,7 +150,7 @@ class StoryManager:
 
     async def _generate_story_options(self, genre: str) -> List[Dict[str, str]]:
         """Gera opções de história usando LLM"""
-        logger.info(f"Gerando opções de história para o gênero: {genre}")
+        self.logger.info(f"Gerando opções de história para o gênero: {genre}")
         
         prompt = f"""Você é um assistente que gera histórias criativas. Crie 3 opções de histórias completas no gênero {genre}, seguindo rigorosamente estas instruções:
 
@@ -155,7 +159,8 @@ class StoryManager:
    - Resumo: 2-3 parágrafos bem escritos
    - Personagens: 2-3 principais com:
      * Nome
-     * Descrição física e psicológica
+     * Descrição física
+     * Personalidade (traços psicológicos, comportamento, motivações)
      * Papel na história
    - Locais: 1-2 importantes com:
      * Nome
@@ -203,45 +208,45 @@ class StoryManager:
             
             # Valida o formato JSON com mais detalhes
             try:
-                logger.debug(f"Resultado bruto da LLM: {result}")
+                self.logger.debug(f"Resultado bruto da LLM: {result}")
                 
                 # Converte string para dict se necessário
                 if isinstance(result, str):
                     try:
                         result = json.loads(result)
-                        logger.debug("JSON convertido com sucesso de string para dict")
+                        self.logger.debug("JSON convertido com sucesso de string para dict")
                     except json.JSONDecodeError as e:
-                        logger.error(f"Falha ao converter JSON string para dict: {e}")
+                        self.logger.error(f"Falha ao converter JSON string para dict: {e}")
                         raise ValueError(f"Erro ao decodificar JSON: {e}")
                 
                 # Verifica estrutura básica
                 if not isinstance(result, dict):
-                    logger.error(f"Resultado não é um dicionário: {type(result)}")
+                    self.logger.error(f"Resultado não é um dicionário: {type(result)}")
                     raise ValueError("Formato JSON inválido - esperado um objeto/dicionário")
                 
                 if "stories" not in result:
-                    logger.error(f"Chave 'stories' faltando no JSON: {result.keys()}")
+                    self.logger.error(f"Chave 'stories' faltando no JSON: {result.keys()}")
                     raise ValueError("Formato JSON inválido - falta chave 'stories'")
                 
                 stories = result["stories"]
                 if not isinstance(stories, list):
-                    logger.error(f"Valor de 'stories' não é uma lista: {type(stories)}")
+                    self.logger.error(f"Valor de 'stories' não é uma lista: {type(stories)}")
                     raise ValueError("Formato JSON inválido - 'stories' deve ser uma lista")
                 
-                logger.debug(f"Número de histórias recebidas: {len(stories)}")
+                self.logger.debug(f"Número de histórias recebidas: {len(stories)}")
                 
                 # Valida cada história com mais detalhes
                 validated_stories = []
                 for i, story in enumerate(stories):
                     if not isinstance(story, dict):
-                        logger.warning(f"História {i} ignorada - não é um dicionário")
+                        self.logger.warning(f"História {i} ignorada - não é um dicionário")
                         continue
                         
                     # Valida campos obrigatórios
                     if "title" not in story:
-                        logger.warning(f"História {i} sem título - usando padrão")
+                        self.logger.warning(f"História {i} sem título - usando padrão")
                     if "summary" not in story:
-                        logger.warning(f"História {i} sem resumo - usando string vazia")
+                        self.logger.warning(f"História {i} sem resumo - usando string vazia")
                     
                     validated_story = {
                         "title": story.get("title", "História sem título"),
@@ -253,36 +258,37 @@ class StoryManager:
                     # Valida personagens com mais detalhes
                     if "characters" in story:
                         if not isinstance(story["characters"], list):
-                            logger.warning(f"Personagens da história {i} não são uma lista")
+                            self.logger.warning(f"Personagens da história {i} não são uma lista")
                         else:
-                            logger.debug(f"Validando {len(story['characters'])} personagens")
+                            self.logger.debug(f"Validando {len(story['characters'])} personagens")
                             for char in story["characters"]:
                                 if not isinstance(char, dict):
-                                    logger.warning(f"Personagem inválido na história {i} - ignorado")
+                                    self.logger.warning(f"Personagem inválido na história {i} - ignorado")
                                     continue
                                     
                                 if "name" not in char:
-                                    logger.warning(f"Personagem sem nome na história {i}")
+                                    self.logger.warning(f"Personagem sem nome na história {i}")
                                 
                                 validated_story["characters"].append({
                                     "name": char.get("name", "Sem nome"),
                                     "description": char.get("description", ""),
+                                    "personality": char.get("personality", ""),
                                     "role": char.get("role", "Personagem")
                                 })
                     
                     # Valida locais com mais detalhes
                     if "locations" in story:
                         if not isinstance(story["locations"], list):
-                            logger.warning(f"Locais da história {i} não são uma lista")
+                            self.logger.warning(f"Locais da história {i} não são uma lista")
                         else:
-                            logger.debug(f"Validando {len(story['locations'])} locais")
+                            self.logger.debug(f"Validando {len(story['locations'])} locais")
                             for loc in story["locations"]:
                                 if not isinstance(loc, dict):
-                                    logger.warning(f"Local inválido na história {i} - ignorado")
+                                    self.logger.warning(f"Local inválido na história {i} - ignorado")
                                     continue
                                     
                                 if "name" not in loc:
-                                    logger.warning(f"Local sem nome na história {i}")
+                                    self.logger.warning(f"Local sem nome na história {i}")
                                 
                                 validated_story["locations"].append({
                                     "name": loc.get("name", "Local sem nome"),
@@ -290,25 +296,25 @@ class StoryManager:
                                 })
                     
                     validated_stories.append(validated_story)
-                    logger.debug(f"História {i} validada com sucesso")
+                    self.logger.debug(f"História {i} validada com sucesso")
                 
                 if not validated_stories:
-                    logger.error("Nenhuma história válida encontrada após validação")
+                    self.logger.error("Nenhuma história válida encontrada após validação")
                     raise ValueError("Nenhuma história válida encontrada")
                 
-                logger.info(f"Retornando {len(validated_stories)} histórias validadas")
+                self.logger.info(f"Retornando {len(validated_stories)} histórias validadas")
                 return validated_stories
                 
             except json.JSONDecodeError as e:
-                logger.error(f"Erro ao decodificar JSON: {e}\nConteúdo: {result}")
+                self.logger.error(f"Erro ao decodificar JSON: {e}\nConteúdo: {result}")
                 raise ValueError(f"Erro ao decodificar JSON: {e}")
             except ValueError as e:
-                logger.error(f"Erro de validação de estrutura: {e}\nConteúdo: {result}")
+                self.logger.error(f"Erro de validação de estrutura: {e}\nConteúdo: {result}")
                 raise ValueError(f"Erro de validação de estrutura: {e}")
             else:
                 # Se recebemos texto, tenta estruturar manualmente
                 content = result.get("content", "")
-                logger.warning("Recebido resposta em texto, tentando estruturar manualmente")
+                self.logger.warning("Recebido resposta em texto, tentando estruturar manualmente")
                 
                 # Divide o texto em histórias
                 story_sections = content.split("\nHistória")[1:]  # Remove texto antes da primeira história
@@ -357,13 +363,13 @@ class StoryManager:
                             "locations": locations
                         })
                     except Exception as e:
-                        logger.error(f"Erro ao processar seção da história: {e}")
-                        continue
+                        self.logger.error(f"Erro ao processar seção da história: {e}")
+                    continue
                 
                 return stories if stories else self._get_fallback_stories(genre)
                 
         except Exception as e:
-            logger.error(f"Erro ao gerar histórias: {e}")
+            self.logger.error(f"Erro ao gerar histórias: {e}")
             return self._get_fallback_stories(genre)
 
     def _get_fallback_stories(self, genre: str) -> List[Dict[str, str]]:
@@ -417,172 +423,26 @@ class StoryManager:
             try:
                 choice = int(input(f"\nEscolha uma história (1-{len(options)}): "))
                 if 1 <= choice <= len(options):
-                    return options[choice - 1]
+                    self.selected_story = options[choice - 1]  # Armazena a história selecionada
+                    return self.selected_story
                 print(f"Por favor, escolha um número entre 1 e {len(options)}")
             except ValueError:
                 print("Por favor, insira um número válido")
 
-    async def _create_initial_context(self, story: Dict[str, str]) -> Dict[str, Any]:
+    async def _create_initial_context(self, selected_story: Dict[str, str]) -> Dict[str, Any]:
         """Cria o contexto inicial da história"""
+        if not selected_story:
+            raise ValueError("Nenhuma história selecionada")
+            
         return {
-            "title": story["title"],
-            "summary": story["summary"],
+            "title": selected_story["title"],
+            "summary": selected_story["summary"],
             "current_scene": "Introdução",
             "characters": [],
             "locations": [],
             "timeline": []
         }
 
-    async def _create_main_characters(self, context: Dict[str, Any]) -> None:
-        """Cria os personagens principais da história"""
-        print("\nCriando personagens principais...")
-        
-        # Seleciona narrador
-        print("\nQual narrador irá seguir com você nessa jornada?")
-        print("1) Narrador Descritivo (padrão)")
-        print("2) Narrador Sassy")
-        
-        while True:
-            try:
-                choice = int(input("\nEscolha (1-2): "))
-                if choice == 1:
-                    narrator_type = "descriptive"
-                    description = "Narrador descritivo que contextualiza e enriquece a história"
-                elif choice == 2:
-                    narrator_type = "sassy"
-                    description = "Narrador sarcástico e debochado que faz comentários irreverentes"
-                else:
-                    print("Opção inválida. Tente novamente.")
-                    continue
-                
-                # Cria narrador
-                narrator = await self.config.character_manager.create_character(
-                    name="Narrador",
-                    role="Narrador",
-                    description=description,
-                    voice=f"voices/narrator_{narrator_type}.wav"
-                )
-                context["characters"].append(narrator)
-                break
-                
-            except ValueError:
-                print("Por favor, insira um número válido")
-        
-        # Cria personagens da história selecionada
-        if "characters" in context:
-            for char_data in context["characters"]:
-                character = await self.config.character_manager.create_character(
-                    name=char_data["name"],
-                    role=char_data.get("role", "Personagem"),
-                    description=char_data["description"]
-                )
-                context["characters"].append(character)
-
-        # Cria personagem do jogador
-        print("\nVamos criar seu personagem!")
-        player_name = input("Qual o nome do seu personagem? ")
-        player_description = input("Descreva seu personagem (aparência, personalidade): ")
-        
-        self.player_character = await self.config.character_manager.create_character(
-            name=player_name,
-            role="Jogador",
-            description=player_description,
-            is_player=True
-        )
-        context["characters"].append(self.player_character)
-        
-        print(f"\nPersonagem {player_name} criado com sucesso!")
-
-    async def _save_story(self, context: Dict[str, Any]) -> None:
-        """Salva a história no banco de dados"""
-        query = """
-            INSERT INTO story_context (summary, current_scene)
-            VALUES (?, ?)
-        """
-        params = (context["summary"], context["current_scene"])
-        
-        try:
-            story_id = await self.db.execute_write(query, params)
-            
-            # Salva personagens
-            for character in context["characters"]:
-                await self._save_character(story_id, character)
-                
-            # Salva locais
-            for location in context["locations"]:
-                await self._save_location(story_id, location)
-                
-            print("História salva no banco de dados com sucesso!")
-            
-        except Exception as e:
-            logger.error(f"Erro ao salvar história: {e}")
-            raise
-
-    async def _save_character(self, story_id: int, character: Dict[str, Any]) -> None:
-        """Salva um personagem no banco de dados"""
-        query = """
-            INSERT INTO story_characters (story_context_id, character_id, role, relationships)
-            VALUES (?, ?, ?, ?)
-        """
-        params = (
-            story_id,
-            character.get("id"),
-            character.get("role", "Personagem"),
-            json.dumps(character.get("relationships", {}))
-        )
-        
-        try:
-            await self.db.execute_write(query, params)
-        except Exception as e:
-            logger.error(f"Erro ao salvar personagem: {e}")
-            raise
-
-    async def _save_location(self, story_id: int, location: Dict[str, Any]) -> None:
-        """Salva um local no banco de dados"""
-        query = """
-            INSERT INTO story_locations (story_context_id, location_id, description)
-            VALUES (?, ?, ?)
-        """
-        params = (
-            story_id,
-            location.get("id"),
-            location.get("description", "")
-        )
-        
-        try:
-            await self.db.execute_write(query, params)
-        except Exception as e:
-            logger.error(f"Erro ao salvar local: {e}")
-            raise
-
-    async def get_current_story(self) -> Optional[Dict[str, Any]]:
-        """Retorna a história atual"""
+    def get_current_story(self) -> Optional[Dict[str, Any]]:
+        """Retorna a história atual sendo gerenciada"""
         return self.current_story
-
-    async def update_story_context(self, new_context: Dict[str, Any]) -> None:
-        """Atualiza o contexto da história"""
-        self.current_story = new_context
-        await self._save_story(new_context)
-
-    async def advance_story(self) -> None:
-        """Avança a história para a próxima cena"""
-        if not self.current_story:
-            raise ValueError("Nenhuma história ativa")
-        
-        # TODO: Implementar lógica de avanço de cena
-        pass
-
-    async def reset_story(self) -> None:
-        """Reseta a história atual"""
-        self.current_story = None
-        self.current_scene = None
-        print("História resetada com sucesso.")
-
-    async def close(self) -> None:
-        """Fecha todas as conexões e recursos"""
-        if self.llm_client:
-            try:
-                await self.llm_client.close()
-                logger.info("Conexão LLM fechada com sucesso")
-            except Exception as e:
-                logger.error(f"Erro ao fechar LLMClient: {e}")

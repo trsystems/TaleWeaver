@@ -18,10 +18,22 @@ TaleWeaver/
 ├── story_manager.py        # Gerenciamento de histórias
 ├── narrator_system.py      # Sistema de narradores
 ├── tests/                  # Testes unitários
+│   └── utilities/          # Utilitários para testes e manutenção
+│       ├── check_schema.py # Verifica a estrutura do banco de dados
+│       ├── reset_db.py     # Reseta o banco de dados para estado inicial
+│       ├── reset_characters_table.py # Reseta tabela de personagens
+│       └── reset_and_restart.bat # Script para resetar e reiniciar o sistema
 ├── Makefile                # Automação de tarefas
 ├── requirements.txt        # Dependências do projeto
 └── .gitignore              # Arquivos ignorados pelo Git
 ```
+
+### Utilitários de Teste
+
+- **check_schema.py**: Verifica se a estrutura do banco de dados está correta
+- **reset_db.py**: Reseta completamente o banco de dados para o estado inicial
+- **reset_characters_table.py**: Reseta especificamente a tabela de personagens
+- **reset_and_restart.bat**: Script que para o sistema, reseta o banco de dados e reinicia a aplicação
 
 ## Funcionalidades Implementadas
 
