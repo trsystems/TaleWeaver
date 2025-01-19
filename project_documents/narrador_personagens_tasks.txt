@@ -1,0 +1,89 @@
+# Documentação e Tarefas para Implementação de Narradores e Personagens
+
+## Estado Atual
+
+### Narradores
+- Tipos disponíveis:
+  1. Descritivo (padrão) - voz: voices/narrator_descriptive.wav
+  2. Sassy - voz: voices/narrator_sassy.wav
+- Criado automaticamente como primeiro personagem
+- Atribuição automática de voz
+- Armazenado no banco de dados como personagem especial (role="Narrador")
+
+### Personagens
+- Sistema básico de criação e gerenciamento
+- Atribuição automática de voz
+- Relacionamentos entre personagens
+- Histórico de memórias
+- Limite máximo de 20 personagens por história
+
+### Configurações
+- Diretório de vozes: "voices"
+- Voz padrão do narrador: "narrator_descriptive.wav"
+- Configurações de áudio no config.json
+
+## Tarefas Necessárias
+
+### 1. Seleção de Narrador
+- [ ] Criar interface para seleção inicial do narrador
+- [ ] Implementar descrição dos estilos de narração:
+  - Narrador Descritivo (padrão):
+    * Narração detalhada e imparcial
+    * Foco na descrição de cenários e ações
+    * Voz: narrator_descriptive.wav
+    * Diretrizes:
+      - Descreve ações e ambientes de forma imersiva e detalhada
+      - Usa linguagem descritiva e envolvente
+      - Foca em detalhes sensoriais (visão, som, cheiro, etc.)
+      - Mantém o tom consistente com a cena
+      - Cria atmosfera apropriada para cada momento
+      - Mantém descrições curtas (2-3 frases) para manter o ritmo
+
+  - Narrador Sassy:
+    * Narração com personalidade e humor
+    * Comentários irônicos e observações perspicazes
+    * Voz: narrator_sassy.wav
+    * Diretrizes:
+      - Extremamente irreverente, sarcástico e debochado
+      - Quebra a quarta parede e interage diretamente com o usuário
+      - Usa gírias e expressões brasileiras
+      - Faz comentários provocativos e piadas ácidas
+      - Em cenas românticas faz insinuações maliciosas
+      - Faz referências à cultura pop brasileira
+      - Mantém um tom de deboche constante
+- [ ] Adicionar opção de seleção entre:
+  - Narrador Descritivo (padrão)
+  - Narrador Sassy
+
+### 2. Integração com Sistema de História
+- [ ] Adaptar estilo de narração conforme tipo selecionado
+- [ ] Implementar lógica de interação entre narrador e personagens
+- [ ] Criar sistema de diálogos entre narrador e usuário
+
+### 3. Melhorias no Gerenciamento de Personagens
+- [ ] Adicionar seleção de voz para novos personagens
+- [ ] Implementar sistema de personalidade para personagens
+- [ ] Criar sistema de interação entre personagens
+
+### 4. Interface do Usuário
+- [ ] Desenvolver menu de gerenciamento de narradores
+- [ ] Criar interface para visualização de detalhes do narrador
+- [ ] Implementar sistema de feedback do narrador
+
+### 5. Configurações
+- [ ] Adicionar configurações específicas para narradores no config.json
+- [ ] Implementar sistema de persistência das escolhas do narrador
+- [ ] Criar mecanismo de troca de narrador durante a história
+
+### 6. Testes
+- [ ] Criar testes unitários para sistema de narradores
+- [ ] Implementar testes de integração entre narrador e personagens
+- [ ] Desenvolver testes de interface para seleção de narrador
+
+## Prioridades
+1. Seleção de Narrador
+2. Integração com Sistema de História
+3. Interface do Usuário
+4. Melhorias no Gerenciamento de Personagens
+5. Configurações
+6. Testes

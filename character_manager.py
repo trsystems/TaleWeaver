@@ -88,9 +88,19 @@ class CharacterManager:
         """Atribui uma voz ao personagem"""
         print("\nAtribuindo voz ao personagem...")
         
-        # TODO: Implementar lógica de seleção de voz
         if character["role"].lower() == "narrador":
-            character["voice"] = self.available_voices["narrator_descriptive"]
+            print("\nSelecione o tipo de narrador:")
+            print("1. Descritivo (padrão)")
+            print("2. Sassy")
+            
+            try:
+                choice = input("Escolha (1-2): ")
+                if choice == "2":
+                    character["voice"] = self.available_voices["narrator_sassy"]
+                else:
+                    character["voice"] = self.available_voices["narrator_descriptive"]
+            except:
+                character["voice"] = self.available_voices["narrator_descriptive"]
         else:
             character["voice"] = self.available_voices["male_01"]
 

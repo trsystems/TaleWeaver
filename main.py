@@ -16,12 +16,14 @@ from typing import Optional, Dict, Any
 from config import ConfigManager
 from database import AsyncDatabaseManager
 from story_manager import StoryManager
+from narrator_system import NarratorSystem
 
 class TaleWeaverApp:
     def __init__(self):
         self.config = ConfigManager()
         self.db: Optional[AsyncDatabaseManager] = None
         self.story_manager: Optional[StoryManager] = None
+        self.narrator_system: Optional[NarratorSystem] = None
         self.running = False
 
     async def initialize(self) -> None:
@@ -45,6 +47,11 @@ class TaleWeaverApp:
             
             # Inicializa sistema de voz
             await self.config.initialize_voice_system()
+            
+            # Inicializa sistema de narradores
+            self.narrator_system = NarratorSystem(self.config)
+            await self.narrator_system.initialize()
+            await self.narrator_system.set_narrator('descriptive')  # Narrador padrão
             
             # Verifica se há história em andamento
             self.current_story = await self.story_manager.get_current_story()
@@ -76,10 +83,11 @@ class TaleWeaverApp:
         print("1. Iniciar nova história")
         print("2. Continuar história existente")
         print("3. Gerenciar personagens")
-        print("4. Ver contexto atual")
-        print("5. Ver lembranças")
-        print("6. Configurações")
-        print("7. Sair")
+        print("4. Selecionar narrador")
+        print("5. Ver contexto atual")
+        print("6. Ver lembranças")
+        print("7. Configurações")
+        print("8. Sair")
 
     async def _get_user_choice(self) -> int:
         """Obtém a escolha do usuário"""
@@ -96,10 +104,11 @@ class TaleWeaverApp:
             1: self._start_new_story,
             2: self._continue_story,
             3: self._manage_characters,
-            4: self._show_current_context,
-            5: self._show_memories,
-            6: self._show_settings,
-            7: self._exit_app
+            4: self._select_narrator,
+            5: self._show_current_context,
+            6: self._show_memories,
+            7: self._show_settings,
+            8: self._exit_app
         }
         
         handler = handlers.get(choice, self._invalid_choice)
@@ -254,6 +263,33 @@ class TaleWeaverApp:
         """Encerra o programa"""
         self.running = False
         print("Encerrando TaleWeaver...")
+
+    async def _select_narrator(self) -> None:
+        """Permite ao usuário selecionar o narrador"""
+        if not self.narrator_system:
+            print("Erro: Sistema de narradores não inicializado")
+            return
+            
+        print("\n=== Seleção de Narrador ===")
+        print("1. Narrador Descritivo (padrão)")
+        print("   - Narra a cena de forma neutra e descritiva")
+        print("   - Voz: narrator_descriptive.wav")
+        print("2. Narrador Sassy")
+        print("   - Adiciona comentários irônicos e humorísticos")
+        print("   - Voz: narrator_sassy.wav")
+        
+        try:
+            choice = int(input("\nEscolha um narrador: "))
+            if choice == 1:
+                await self.narrator_system.set_narrator('descriptive')
+                print("Narrador Descritivo selecionado!")
+            elif choice == 2:
+                await self.narrator_system.set_narrator('sassy')
+                print("Narrador Sassy selecionado!")
+            else:
+                print("Opção inválida. Mantendo narrador atual.")
+        except ValueError:
+            print("Entrada inválida. Por favor, insira 1 ou 2.")
 
     async def _invalid_choice(self) -> None:
         """Lida com escolhas inválidas"""

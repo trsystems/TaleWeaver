@@ -435,36 +435,13 @@ class StoryManager:
         """Cria os personagens principais da história"""
         print("\nCriando personagens principais...")
         
-        # Seleciona narrador
-        print("\nQual narrador irá seguir com você nessa jornada?")
-        print("1) Narrador Descritivo (padrão)")
-        print("2) Narrador Sassy")
-        
-        while True:
-            try:
-                choice = int(input("\nEscolha (1-2): "))
-                if choice == 1:
-                    narrator_type = "descriptive"
-                    description = "Narrador descritivo que contextualiza e enriquece a história"
-                elif choice == 2:
-                    narrator_type = "sassy"
-                    description = "Narrador sarcástico e debochado que faz comentários irreverentes"
-                else:
-                    print("Opção inválida. Tente novamente.")
-                    continue
-                
-                # Cria narrador
-                narrator = await self.config.character_manager.create_character(
-                    name="Narrador",
-                    role="Narrador",
-                    description=description,
-                    voice=f"voices/narrator_{narrator_type}.wav"
-                )
-                context["characters"].append(narrator)
-                break
-                
-            except ValueError:
-                print("Por favor, insira um número válido")
+        # Cria narrador
+        narrator = await self.config.character_manager.create_character(
+            name="Narrador",
+            role="Narrador",
+            description="Narrador onisciente da história"
+        )
+        context["characters"].append(narrator)
         
         # Cria personagens da história selecionada
         if "characters" in context:

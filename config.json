@@ -43,7 +43,7 @@
     },
     "characters": {
         "max_characters": 20,
-        "default_voice": "narrator_voice.wav",
+        "default_voice": "narrator_descriptive.wav",
         "voice_dir": "voices"
     },
     "logging": {
