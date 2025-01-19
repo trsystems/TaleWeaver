@@ -178,17 +178,35 @@ Se você não seguir estas regras exatamente, o sistema falhará."""},
                     json_str = story_content[start:end]
                     story_data = json.loads(json_str)
                     
-                    required_fields = ["title", "summary", "characters", "locations"]
-                    if not all(field in story_data for field in required_fields):
-                        raise Exception("Missing required fields in JSON response")
-                        
-                    return {
-                        "title": story_data.get("title", ""),
-                        "summary": story_data.get("summary", ""),
-                        "characters": story_data.get("characters", []),
-                        "locations": story_data.get("locations", []),
-                        "format": "json"
-                    }
+                    # Verifica se é o formato de múltiplas histórias
+                    if "stories" in story_data:
+                        stories = story_data["stories"]
+                        if not isinstance(stories, list) or len(stories) == 0:
+                            raise Exception("Invalid stories format in response")
+                            
+                        # Valida cada história individualmente
+                        required_fields = ["title", "summary", "characters", "locations"]
+                        for story in stories:
+                            if not all(field in story for field in required_fields):
+                                raise Exception("Missing required fields in story JSON")
+                                
+                        return {
+                            "stories": stories,
+                            "format": "json"
+                        }
+                    else:
+                        # Formato antigo de história única
+                        required_fields = ["title", "summary", "characters", "locations"]
+                        if not all(field in story_data for field in required_fields):
+                            raise Exception("Missing required fields in JSON response")
+                            
+                        return {
+                            "title": story_data.get("title", ""),
+                            "summary": story_data.get("summary", ""),
+                            "characters": story_data.get("characters", []),
+                            "locations": story_data.get("locations", []),
+                            "format": "json"
+                        }
 
                 except json.JSONDecodeError as e:
                     logger.error(f"Failed to parse JSON from response: {e}")
