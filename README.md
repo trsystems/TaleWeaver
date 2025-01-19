@@ -16,6 +16,7 @@ TaleWeaver/
 ├── logger.py               # Sistema de logs
 ├── main.py                 # Ponto de entrada do sistema
 ├── story_manager.py        # Gerenciamento de histórias
+├── narrator_system.py      # Sistema de narradores
 ├── tests/                  # Testes unitários
 ├── Makefile                # Automação de tarefas
 ├── requirements.txt        # Dependências do projeto
@@ -31,14 +32,47 @@ TaleWeaver/
 - [x] Implementação das classes principais no story_manager.py
   - LLMClient para integração com LMStudio
   - StoryManager para gerenciamento de histórias
+- [x] Sistema de narradores implementado
+  - Narrador Descritivo (padrão)
+  - Narrador Sassy
+- [x] Gerenciamento de personagens
+  - Criação de personagens principais
+  - Criação do personagem do jogador
+  - Interação com personagens via diálogo
+- [x] Sistema de vozes integrado
+  - Vozes específicas para personagens
+  - Vozes para narradores (descriptive.wav e sassy.wav)
+
+## Sistema de Narradores
+
+O TaleWeaver oferece dois tipos de narradores:
+
+1. **Narrador Descritivo (padrão)**
+   - Narra a cena de forma neutra e descritiva
+   - Voz: narrator_descriptive.wav
+   - Ideal para histórias sérias e narrativas detalhadas
+
+2. **Narrador Sassy**
+   - Adiciona comentários irônicos e humorísticos
+   - Voz: narrator_sassy.wav
+   - Ideal para histórias mais leves e descontraídas
+
+## Interação com Personagens
+
+O sistema permite:
+- Criação de personagens principais
+- Criação do personagem do jogador
+- Diálogos interativos com personagens
+- Evolução de relacionamentos entre personagens
+- Sistema de memórias e contexto
 
 ## Próximos Passos
 
-1. Configurar conexão com banco de dados em database.py
-2. Desenvolver sistema de gerenciamento de personagens
-3. Implementar integração completa com LLM
-4. Criar sistema de narração e geração de voz
-5. Desenvolver interface de linha de comando
+1. Correção de bugs no sistema de banco de dados
+2. Implementação de sistema de lembranças
+3. Melhoria na interface de linha de comando
+4. Adição de mais perfis de narradores
+5. Expansão do sistema de vozes
 
 ## Como Contribuir
 
@@ -53,6 +87,7 @@ TaleWeaver/
 - Python 3.8+
 - LMStudio rodando localmente
 - XTTS2 para geração de vozes
+- Banco de dados SQLite3
 
 ## Licença
 

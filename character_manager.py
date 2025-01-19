@@ -65,7 +65,7 @@ class CharacterManager:
             "female_02": "voices/female_02.wav"
         }
 
-    async def create_character(self, name: str, role: str, description: str) -> Dict[str, Any]:
+    async def create_character(self, name: str, role: str, description: str, voice: Optional[str] = None, is_player: bool = False) -> Dict[str, Any]:
         """Cria um novo personagem"""
         print(f"\nCriando novo personagem: {name}")
         
@@ -73,12 +73,14 @@ class CharacterManager:
             "name": name,
             "role": role,
             "description": description,
-            "voice": None,
+            "voice": voice,
             "relationships": {},
-            "memories": []
+            "memories": [],
+            "is_player": is_player
         }
         
-        await self._assign_voice(character)
+        if voice is None:
+            await self._assign_voice(character)
         await self._save_character(character)
         
         print(f"Personagem {name} criado com sucesso!")
@@ -89,32 +91,43 @@ class CharacterManager:
         print("\nAtribuindo voz ao personagem...")
         
         if character["role"].lower() == "narrador":
-            print("\nSelecione o tipo de narrador:")
-            print("1. Descritivo (padrão)")
-            print("2. Sassy")
+            print("\n=== Seleção de Narrador ===")
+            print("Escolha o estilo de narração para sua história:")
+            print("1. Narrador Descritivo (Padrão)")
+            print("   - Narração neutra e detalhada")
+            print("   - Foco na descrição de cenários e ações")
+            print("   - Voz: narrator_descriptive.wav")
+            print("\n2. Narrador Sassy")
+            print("   - Narração com personalidade e humor")
+            print("   - Comentários irônicos e observações perspicazes")
+            print("   - Voz: narrator_sassy.wav")
             
             try:
-                choice = input("Escolha (1-2): ")
+                choice = input("\nEscolha o narrador (1-2): ")
                 if choice == "2":
                     character["voice"] = self.available_voices["narrator_sassy"]
+                    print("\nNarrador Sassy selecionado!")
                 else:
                     character["voice"] = self.available_voices["narrator_descriptive"]
+                    print("\nNarrador Descritivo selecionado (padrão)!")
             except:
                 character["voice"] = self.available_voices["narrator_descriptive"]
+                print("\nNarrador Descritivo selecionado automaticamente (padrão)!")
         else:
             character["voice"] = self.available_voices["male_01"]
 
     async def _save_character(self, character: Dict[str, Any]) -> None:
         """Salva o personagem no banco de dados"""
         query = """
-            INSERT INTO characters (name, role, description, voice)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO characters (name, role, description, voice, is_player)
+            VALUES (?, ?, ?, ?, ?)
         """
         params = (
             character["name"],
             character["role"],
             character["description"],
-            character["voice"]
+            character["voice"],
+            int(character.get("is_player", False))
         )
         
         try:
@@ -145,7 +158,7 @@ class CharacterManager:
         """Atualiza um personagem existente"""
         query = """
             UPDATE characters
-            SET name = ?, role = ?, description = ?, voice = ?
+            SET name = ?, role = ?, description = ?, voice = ?, is_player = ?
             WHERE id = ?
         """
         params = (
@@ -153,6 +166,7 @@ class CharacterManager:
             updates.get("role"),
             updates.get("description"),
             updates.get("voice"),
+            int(updates.get("is_player", False)),
             character_id
         )
         
@@ -349,6 +363,7 @@ class CharacterManager:
         print(f"Papel: {character['role']}")
         print(f"Descrição: {character['description']}")
         print(f"Voz: {character['voice']}")
+        print(f"É personagem do jogador: {'Sim' if character.get('is_player', False) else 'Não'}")
         
         # Mostrar relacionamentos
         relationships = await self.get_relationships(character["id"])

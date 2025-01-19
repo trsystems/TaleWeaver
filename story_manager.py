@@ -32,6 +32,8 @@ class StoryManager:
         self.current_scene: Optional[Dict[str, Any]] = None
         self.initialized = False
         self.llm_client: Optional[LLMClient] = None
+        self.active_story_id: Optional[int] = None  # ID da história ativa
+        self.player_character: Optional[Dict[str, Any]] = None  # Personagem do jogador
 
     async def initialize(self):
         """Inicializa o StoryManager"""
@@ -475,6 +477,21 @@ class StoryManager:
                     description=char_data["description"]
                 )
                 context["characters"].append(character)
+
+        # Cria personagem do jogador
+        print("\nVamos criar seu personagem!")
+        player_name = input("Qual o nome do seu personagem? ")
+        player_description = input("Descreva seu personagem (aparência, personalidade): ")
+        
+        self.player_character = await self.config.character_manager.create_character(
+            name=player_name,
+            role="Jogador",
+            description=player_description,
+            is_player=True
+        )
+        context["characters"].append(self.player_character)
+        
+        print(f"\nPersonagem {player_name} criado com sucesso!")
 
     async def _save_story(self, context: Dict[str, Any]) -> None:
         """Salva a história no banco de dados"""
