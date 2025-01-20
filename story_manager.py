@@ -411,6 +411,16 @@ class StoryManager:
 
     async def _save_story_character(self, story_id: int, character: Dict[str, Any]) -> None:
         """Salva um personagem associado à história"""
+        # Primeiro cria o personagem no banco de dados
+        created_char = await self.config.character_manager.create_character(
+            name=character['name'],
+            description=character['description'],
+            role=character['role'],
+            personality=character.get('personality', ''),
+            is_player=False
+        )
+        
+        # Agora associa o personagem à história com o ID correto
         await self.db.execute_write(
             """
             INSERT INTO story_characters (
@@ -420,11 +430,26 @@ class StoryManager:
                 relationships
             ) VALUES (?, ?, ?, ?)
             """,
-            (story_id, character.get('id'), character.get('role'), json.dumps({}))
+            (story_id, created_char['id'], character.get('role'), json.dumps({}))
         )
 
     async def _save_story_location(self, story_id: int, location: Dict[str, Any]) -> None:
         """Salva um local associado à história"""
+        # Primeiro cria o local no banco de dados
+        query = """
+            INSERT INTO locations (
+                name,
+                description
+            ) VALUES (?, ?)
+        """
+        params = (
+            location['name'],
+            location['description']
+        )
+        
+        location_id = await self.db.execute_write(query, params)
+        
+        # Agora associa o local à história com o ID correto
         await self.db.execute_write(
             """
             INSERT INTO story_locations (
@@ -433,7 +458,7 @@ class StoryManager:
                 description
             ) VALUES (?, ?, ?)
             """,
-            (story_id, location.get('id'), location.get('description'))
+            (story_id, location_id, location.get('description'))
         )
 
     async def get_current_story(self) -> Optional[Dict[str, Any]]:
