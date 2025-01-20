@@ -114,12 +114,9 @@ class TaleWeaverApp:
         print("\n=== TaleWeaver - Menu Principal ===")
         print("1. Iniciar nova história")
         print("2. Continuar história existente")
-        print("3. Gerenciar personagens")
-        print("4. Selecionar narrador")
-        print("5. Ver contexto atual")
-        print("6. Ver lembranças")
-        print("7. Configurações")
-        print("8. Sair")
+        print("3. Resetar história (apagar tudo)")
+        print("4. Configurações")
+        print("5. Sair")
 
     async def _get_user_choice(self) -> int:
         """Obtém a escolha do usuário"""
@@ -135,12 +132,9 @@ class TaleWeaverApp:
         handlers = {
             1: self._start_new_story,
             2: self._continue_story,
-            3: self._manage_characters,
-            4: self._select_narrator,
-            5: self._show_current_context,
-            6: self._show_memories,
-            7: self._show_settings,
-            8: self._exit_app
+            3: self._reset_story,
+            4: self._show_settings,
+            5: self._exit_app
         }
         
         handler = handlers.get(choice, self._invalid_choice)
@@ -201,9 +195,36 @@ class TaleWeaverApp:
         if not self.current_story:
             print("Nenhuma história ativa encontrada.")
             return
+            
+        while True:
+            print(f"\nContinuando história: {self.current_story['summary']}")
+            await self._show_story_menu()
+            
+            # Verifica se o usuário escolheu voltar ao menu principal
+            if not self.running:
+                break
+
+    async def _show_story_menu(self) -> None:
+        """Exibe o menu de história"""
+        print("\n=== TaleWeaver - Menu de História ===")
+        print("1. Falar com personagens")
+        print("2. Gerenciar personagens")
+        print("3. Selecionar narrador")
+        print("4. Ver contexto atual")
+        print("5. Voltar ao menu principal")
         
-        print(f"\nContinuando história: {self.current_story['summary']}")
-        await self._interact_with_characters()
+        choice = await self._get_user_choice()
+        
+        handlers = {
+            1: self._talk_to_character,
+            2: self._manage_characters,
+            3: self._select_narrator,
+            4: self._show_current_context,
+            5: lambda: None
+        }
+        
+        handler = handlers.get(choice, self._invalid_choice)
+        await handler()
 
     async def _interact_with_characters(self) -> None:
         """Gerencia a interação com os personagens"""
@@ -319,14 +340,61 @@ class TaleWeaverApp:
             return
         
         print("\n=== Contexto Atual ===")
+        print(f"Título: {self.current_story.get('title', 'Sem título')}")
         print(f"Resumo: {self.current_story['summary']}")
-        print(f"Cena atual: {self.current_story['current_scene']}")
+        print(f"\nCena atual: {self.current_story['current_scene']}")
+        
+        print("\nPersonagens principais:")
+        for char in self.current_story.get('characters', []):
+            print(f"- {char['name']}: {char['description']}")
+            
+        print("\nLocais importantes:")
+        for loc in self.current_story.get('locations', []):
+            print(f"- {loc['name']}: {loc['description']}")
+            
+        print("\nPressione Enter para continuar...")
+        input()
 
-    async def _show_memories(self) -> None:
-        """Exibe as lembranças dos personagens"""
-        print("\nExibindo lembranças...")
-        # Implementar lógica de exibição de lembranças
-        pass
+    async def _reset_story(self) -> None:
+        """Reseta a história atual, apagando todos os dados"""
+        print("\n=== ATENÇÃO ===")
+        print("Isso irá apagar TODOS os dados da história atual:")
+        print("- Personagens")
+        print("- Locais")
+        print("- Contexto")
+        print("- Lembranças")
+        print("\nEsta ação é PERMANENTE e IRREVERSÍVEL!")
+        
+        confirm = input("\nTem certeza que deseja continuar? (s/n): ").lower()
+        if confirm != 's':
+            print("Reset cancelado.")
+            return
+            
+        try:
+            if not self.db:
+                raise ValueError("Banco de dados não inicializado")
+                
+            # Limpa todas as tabelas relacionadas à história
+            tables = [
+                "story_context",
+                "story_characters",
+                "story_locations"
+            ]
+            
+            for table in tables:
+                await self.db.execute_write(f"DELETE FROM {table}")
+                print(f"Dados da tabela {table} apagados.")
+                
+            self.current_story = None
+            self.active_story_id = None
+            
+            print("\nHistória resetada com sucesso!")
+            print("Pressione Enter para continuar...")
+            input()
+            
+        except Exception as e:
+            print(f"\nErro ao resetar história: {e}")
+            print("Por favor, tente novamente.")
 
     async def _show_settings(self) -> None:
         """Exibe e gerencia as configurações"""

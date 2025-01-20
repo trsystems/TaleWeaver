@@ -69,6 +69,12 @@ class CharacterManager:
         # Garante que as colunas necessárias existam
         await self._verify_tables()
         
+        # Verifica se o personagem já existe
+        existing_char = await self._find_existing_character(name)
+        if existing_char:
+            print(f"Personagem '{name}' já existe. Retornando registro existente.")
+            return existing_char
+            
         # Validação de flags
         if is_player and is_narrator:
             raise ValueError("Um personagem não pode ser jogador e narrador ao mesmo tempo")
@@ -112,6 +118,22 @@ class CharacterManager:
         else:
             # Atribui uma voz padrão para outros personagens
             character["voice"] = "male_01"
+
+    async def _find_existing_character(self, name: str) -> Optional[Dict[str, Any]]:
+        """Verifica se um personagem com o mesmo nome já existe"""
+        query = """
+            SELECT * FROM characters
+            WHERE name = ?
+            LIMIT 1
+        """
+        try:
+            result = await self.db.execute_query(query, (name,))
+            if result:
+                return result[0]
+            return None
+        except Exception as e:
+            print(f"Erro ao buscar personagem existente: {e}")
+            return None
 
     async def _save_character(self, character: Dict[str, Any]) -> Dict[str, Any]:
         """Salva o personagem no banco de dados e retorna o personagem completo"""

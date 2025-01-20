@@ -347,7 +347,7 @@ class StoryManager:
         }
 
     async def _create_main_characters(self, story_context: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """Cria os personagens principais da história"""
+        """Cria os personagens principais da história e armazena seus IDs no contexto"""
         if not self.config.character_manager:
             self.logger.error("story_manager", "CharacterManager não inicializado")
             return []
@@ -355,6 +355,7 @@ class StoryManager:
         characters = []
         for char_data in story_context.get('characters', []):
             try:
+                # Cria o personagem e armazena o ID no contexto
                 character = await self.config.character_manager.create_character(
                     name=char_data['name'],
                     role=char_data['role'],
@@ -362,6 +363,9 @@ class StoryManager:
                     personality=char_data.get('personality', ''),
                     is_player=False
                 )
+                
+                # Atualiza o char_data com o ID do personagem criado
+                char_data['id'] = character['id']
                 characters.append(character)
             except Exception as e:
                 self.logger.error("story_manager", f"Erro ao criar personagem {char_data.get('name')}: {e}")
@@ -410,17 +414,12 @@ class StoryManager:
             raise
 
     async def _save_story_character(self, story_id: int, character: Dict[str, Any]) -> None:
-        """Salva um personagem associado à história"""
-        # Primeiro cria o personagem no banco de dados
-        created_char = await self.config.character_manager.create_character(
-            name=character['name'],
-            description=character['description'],
-            role=character['role'],
-            personality=character.get('personality', ''),
-            is_player=False
-        )
-        
-        # Agora associa o personagem à história com o ID correto
+        """Associa um personagem existente à história"""
+        # Verifica se o personagem já foi criado
+        if 'id' not in character:
+            raise ValueError("Personagem deve ser criado antes de ser associado à história")
+            
+        # Associa o personagem à história com o ID correto
         await self.db.execute_write(
             """
             INSERT INTO story_characters (
@@ -430,7 +429,7 @@ class StoryManager:
                 relationships
             ) VALUES (?, ?, ?, ?)
             """,
-            (story_id, created_char['id'], character.get('role'), json.dumps({}))
+            (story_id, character['id'], character.get('role'), json.dumps({}))
         )
 
     async def _save_story_location(self, story_id: int, location: Dict[str, Any]) -> None:
