@@ -171,14 +171,29 @@ Se você não seguir estas regras exatamente, o sistema falhará."""},
                     raise Exception(f"Response too short: {len(story_content)} chars")
 
                 try:
-                    start = story_content.find('{')
-                    end = story_content.rfind('}') + 1
+                    # Tenta encontrar o JSON na resposta
+                    json_str = story_content.strip()
                     
-                    if start < 0 or end <= start:
-                        raise Exception("No valid JSON found in response")
-                        
-                    json_str = story_content[start:end]
-                    story_data = json.loads(json_str)
+                    # Remove possíveis textos antes e depois do JSON
+                    if not json_str.startswith('{'):
+                        start = json_str.find('{')
+                        if start >= 0:
+                            json_str = json_str[start:]
+                    
+                    if not json_str.endswith('}'):
+                        end = json_str.rfind('}') + 1
+                        if end > 0:
+                            json_str = json_str[:end]
+                    
+                    # Tenta parsear o JSON
+                    try:
+                        story_data = json.loads(json_str)
+                    except json.JSONDecodeError as e:
+                        # Tenta corrigir problemas comuns de formatação
+                        json_str = json_str.replace("'", '"')  # Substitui aspas simples por duplas
+                        json_str = json_str.replace("True", "true").replace("False", "false")  # Corrige booleanos
+                        json_str = json_str.replace("None", "null")  # Corrige valores nulos
+                        story_data = json.loads(json_str)
                     
                     # Verifica se é o formato de múltiplas histórias
                     if "stories" in story_data:
@@ -211,8 +226,17 @@ Se você não seguir estas regras exatamente, o sistema falhará."""},
                         }
 
                 except json.JSONDecodeError as e:
-                    logger.error(f"Failed to parse JSON from response: {e}")
-                    raise Exception("LLM response was not in the expected JSON format")
+                    logger.error(module="llm_client", message=f"Failed to parse JSON from response: {e}\nContent: {story_content}")
+                    # Tenta usar uma estratégia de fallback para extrair o JSON
+                    try:
+                        # Remove possíveis textos antes e depois do JSON
+                        json_str = story_content[story_content.find('{'):story_content.rfind('}')+1]
+                        # Tenta parsear novamente
+                        story_data = json.loads(json_str)
+                        return story_data
+                    except Exception as fallback_error:
+                        logger.error(module="llm_client", message=f"Fallback parsing also failed: {fallback_error}")
+                        raise Exception("LLM response was not in the expected JSON format")
 
             except aiohttp.ClientConnectionError as e:
                 last_error = e
