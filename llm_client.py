@@ -17,7 +17,7 @@ from typing import AsyncGenerator, Optional, Dict, Any
 import aiohttp
 from pydantic import BaseModel, ValidationError
 
-logger = logging.getLogger(__name__)
+from log_manager import LogManager
 
 class LLMResponse(BaseModel):
     content: str
@@ -26,7 +26,7 @@ class LLMResponse(BaseModel):
     format: str = "text"
 
 class LLMClient:
-    def __init__(self, config: dict):
+    def __init__(self, config: dict, log_manager: LogManager):
         self.base_url = config.get('base_url', 'http://localhost:1234')
         self.base_url = self.base_url.rstrip('/')
         self.api_key = config.get('api_key', 'lm-studio')
@@ -40,6 +40,7 @@ class LLMClient:
         self.keepalive_timeout = 300
         self.heartbeat_interval = 30
         self.language = config.get('language', 'pt')
+        self.log_manager = log_manager
 
     async def initialize(self):
         if not self._session:
@@ -64,7 +65,7 @@ class LLMClient:
                 async with self._session.post(url, headers=headers, json=payload) as response:
                     if response.status != 200:
                         error_msg = await response.text()
-                        logger.error(f"LLM request failed (attempt {attempt + 1}): {response.status} - {error_msg}")
+                        self.log_manager.error("llm_client", f"LLM request failed (attempt {attempt + 1}): {response.status} - {error_msg}")
                         raise Exception(f"Request failed with status {response.status}: {error_msg}")
                     
                     if payload.get("stream", False):
@@ -77,7 +78,7 @@ class LLMClient:
                 attempt += 1
                 if attempt < self.retry_attempts:
                     delay = self.retry_delay * (2 ** (attempt - 1))
-                    logger.warning(f"Retry attempt {attempt} after {delay}s. Error: {str(e)}")
+                    self.log_manager.warning("llm_client", f"Retry attempt {attempt} after {delay}s. Error: {str(e)}")
                     await asyncio.sleep(delay)
                     
         raise Exception(f"Failed after {self.retry_attempts} attempts. Last error: {str(last_error)}")
@@ -151,7 +152,7 @@ Se você não seguir estas regras exatamente, o sistema falhará."""},
             )
 
         except Exception as e:
-            logger.error(f"Error in generate: {str(e)}")
+            self.log_manager.error("llm_client", f"Error in generate: {str(e)}")
             raise
 
     async def generate_story(self, prompt: str) -> Dict[str, Any]:
@@ -226,7 +227,7 @@ Se você não seguir estas regras exatamente, o sistema falhará."""},
                         }
 
                 except json.JSONDecodeError as e:
-                    logger.error(module="llm_client", message=f"Failed to parse JSON from response: {e}\nContent: {story_content}")
+                    self.log_manager.error("llm_client", f"Failed to parse JSON from response: {e}\nContent: {story_content}")
                     # Tenta usar uma estratégia de fallback para extrair o JSON
                     try:
                         # Remove possíveis textos antes e depois do JSON
@@ -235,12 +236,12 @@ Se você não seguir estas regras exatamente, o sistema falhará."""},
                         story_data = json.loads(json_str)
                         return story_data
                     except Exception as fallback_error:
-                        logger.error(module="llm_client", message=f"Fallback parsing also failed: {fallback_error}")
+                        self.log_manager.error("llm_client", f"Fallback parsing also failed: {fallback_error}")
                         raise Exception("LLM response was not in the expected JSON format")
 
             except aiohttp.ClientConnectionError as e:
                 last_error = e
-                logger.warning(f"Connection error (attempt {attempt + 1}): {str(e)}")
+                self.log_manager.warning("llm_client", f"Connection error (attempt {attempt + 1}): {str(e)}")
                 if attempt < max_retries - 1:
                     await asyncio.sleep(2 ** attempt)
                     continue
@@ -248,7 +249,7 @@ Se você não seguir estas regras exatamente, o sistema falhará."""},
                 
             except Exception as e:
                 last_error = e
-                logger.error(f"Error generating story (attempt {attempt + 1}): {str(e)}")
+                self.log_manager.error("llm_client", f"Error generating story (attempt {attempt + 1}): {str(e)}")
                 if attempt < max_retries - 1:
                     await asyncio.sleep(2 ** attempt)
                     continue

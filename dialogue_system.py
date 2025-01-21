@@ -14,14 +14,16 @@ from datetime import datetime
 from config import ConfigManager
 from database import AsyncDatabaseManager
 from llm_client import LLMClient
+from log_manager import LogManager
 
 class DialogueSystem:
-    def __init__(self, config: ConfigManager, db: AsyncDatabaseManager):
+    def __init__(self, config: ConfigManager, db: AsyncDatabaseManager, log_manager: LogManager):
         self.config = config
         self.db = db
         self.llm_client: Optional[LLMClient] = None
         self.current_dialogue: Optional[Dict[str, Any]] = None
         self.dialogue_history: List[Dict[str, str]] = []
+        self.log_manager = log_manager
         
     async def initialize(self):
         """Inicializa o sistema de diálogo"""
@@ -29,7 +31,7 @@ class DialogueSystem:
         if not llm_config:
             raise ValueError("Configurações LLM não encontradas")
             
-        self.llm_client = LLMClient(llm_config)
+        self.llm_client = LLMClient(llm_config, log_manager=self.log_manager)
         await self.llm_client.initialize()
         
     async def start_dialogue(self, character_id: int, mode: str = "narrator") -> Dict[str, Any]:

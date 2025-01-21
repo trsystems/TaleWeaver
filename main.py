@@ -29,10 +29,10 @@ class TaleWeaverApp:
     async def initialize(self) -> None:
         """Inicializa o sistema TaleWeaver"""
         try:
-            # Configura logger
-            from logger import setup_logger
-            self.logger = setup_logger(self.config)
-            self.logger.get_logger("main").info("Inicializando TaleWeaver...")
+            # Configura LogManager
+            from log_manager import LogManager
+            self.log_manager = LogManager(self.config)
+            self.log_manager.info("main", "Inicializando TaleWeaver...")
             
             # Inicializa banco de dados
             self.db = AsyncDatabaseManager(self.config)
@@ -156,7 +156,8 @@ class TaleWeaverApp:
             await self._interact_with_characters()
             
         except Exception as e:
-            print(f"Erro ao criar nova história: {e}")
+            self.log_manager.error("main", f"Erro ao criar nova história: {str(e)}")
+            print(f"\nErro ao criar nova história: {e}")
 
     async def _create_main_characters(self) -> None:
         """Cria os personagens principais da história"""
@@ -265,8 +266,10 @@ class TaleWeaverApp:
                 await self._start_conversation(selected_char)
             else:
                 print("Opção inválida.")
+                self.log_manager.warning("main", "Opção inválida selecionada no menu de personagens")
         except ValueError:
             print("Por favor, insira um número válido.")
+            self.log_manager.warning("main", "Entrada inválida no menu de personagens")
 
     async def _start_conversation(self, character: Dict[str, Any]) -> None:
         """Inicia uma conversa com o personagem selecionado"""
@@ -280,50 +283,55 @@ class TaleWeaverApp:
             'relationships': await self._get_character_relationships(character['id'])
         }
         
-        # Mensagem inicial do personagem
-        initial_message = await self._generate_llm_response(
-            context=context,
-            prompt=f"Como {character['name']}, dê as boas-vindas ao jogador de forma apropriada para o contexto atual"
-        )
-        print(f"{character['name']}: {initial_message}")
-        await self._play_character_voice(character, initial_message)
-        
-        while True:
-            try:
-                user_input = input("\nVocê: ")
-                if user_input.lower() in ["sair", "voltar"]:
+        try:
+            # Mensagem inicial do personagem
+            initial_message = await self._generate_llm_response(
+                context=context,
+                prompt=f"Como {character['name']}, dê as boas-vindas ao jogador de forma apropriada para o contexto atual"
+            )
+            print(f"{character['name']}: {initial_message}")
+            await self._play_character_voice(character, initial_message)
+            
+            while True:
+                try:
+                    user_input = input("\nVocê: ")
+                    if user_input.lower() in ["sair", "voltar"]:
+                        break
+                        
+                    # Atualiza contexto com nova interação
+                    context['user_input'] = user_input
+                    
+                    # Gera resposta do personagem
+                    response = await self._generate_llm_response(
+                        context=context,
+                        prompt=f"Como {character['name']}, responda ao jogador mantendo a personalidade e contexto"
+                    )
+                    
+                    # Processa resposta para separar narração e diálogo
+                    narration, dialogue = self._process_llm_response(response)
+                    
+                    if narration:
+                        print(f"\nNarrador: {narration}")
+                        await self._play_narrator_voice(narration)
+                    
+                    print(f"{character['name']}: {dialogue}")
+                    await self._play_character_voice(character, dialogue)
+                    
+                    # Atualiza histórico da conversa
+                    await self._update_conversation_history(
+                        character['id'],
+                        user_input,
+                        response
+                    )
+                    
+                except Exception as e:
+                    print(f"Erro durante a conversa: {e}")
+                    self.log_manager.error("main", f"Erro na conversa com {character['name']}: {str(e)}")
                     break
                     
-                # Atualiza contexto com nova interação
-                context['user_input'] = user_input
-                
-                # Gera resposta do personagem
-                response = await self._generate_llm_response(
-                    context=context,
-                    prompt=f"Como {character['name']}, responda ao jogador mantendo a personalidade e contexto"
-                )
-                
-                # Processa resposta para separar narração e diálogo
-                narration, dialogue = self._process_llm_response(response)
-                
-                if narration:
-                    print(f"\nNarrador: {narration}")
-                    await self._play_narrator_voice(narration)
-                
-                print(f"{character['name']}: {dialogue}")
-                await self._play_character_voice(character, dialogue)
-                
-                # Atualiza histórico da conversa
-                await self._update_conversation_history(
-                    character['id'],
-                    user_input,
-                    response
-                )
-                
-            except Exception as e:
-                print(f"Erro durante a conversa: {e}")
-                self.logger.error(f"Erro na conversa com {character['name']}: {str(e)}")
-                break
+        except Exception as e:
+            print(f"Erro ao iniciar conversa: {e}")
+            self.log_manager.error("main", f"Erro ao iniciar conversa com {character['name']}: {str(e)}")
 
     async def _manage_characters(self) -> None:
         """Gerencia os personagens da história"""
@@ -378,17 +386,21 @@ class TaleWeaverApp:
             tables = [
                 "story_context",
                 "story_characters",
-                "story_locations"
+                "story_locations",
+                "characters"
             ]
             
             for table in tables:
                 await self.db.execute_write(f"DELETE FROM {table}")
                 print(f"Dados da tabela {table} apagados.")
                 
+            # Reinicia as sequências de IDs
+            await self.db.execute_write("DELETE FROM sqlite_sequence")
+                
             self.current_story = None
             self.active_story_id = None
             
-            print("\nHistória resetada com sucesso!")
+            print("\nHistória resetada com sucesso! Todos os dados foram apagados.")
             print("Pressione Enter para continuar...")
             input()
             
@@ -483,7 +495,7 @@ class TaleWeaverApp:
             return response.choices[0].message.content
             
         except Exception as e:
-            self.logger.error(f"Erro ao gerar resposta LLM: {str(e)}")
+            self.log_manager.error("main", f"Erro ao gerar resposta LLM: {str(e)}")
             return f"Desculpe, estou tendo dificuldades para responder. Erro: {str(e)}"
 
     def _process_llm_response(self, response: str) -> tuple[str, str]:
@@ -516,7 +528,7 @@ class TaleWeaverApp:
             return narration, dialogue
             
         except Exception as e:
-            self.logger.error(f"Erro ao processar resposta LLM: {str(e)}")
+            self.log_manager.error("main", f"Erro ao processar resposta LLM: {str(e)}")
             return "", f"Desculpe, houve um erro ao processar minha resposta."
 
     async def _get_conversation_history(self, character_id: str) -> list[str]:
@@ -544,7 +556,7 @@ class TaleWeaverApp:
             return formatted_history
             
         except Exception as e:
-            self.logger.error(f"Erro ao recuperar histórico de conversas: {str(e)}")
+            self.log_manager.error("main", f"Erro ao recuperar histórico de conversas: {str(e)}")
             return []
 
     async def _get_character_relationships(self, character_id: str) -> list[str]:
@@ -578,7 +590,7 @@ class TaleWeaverApp:
             return formatted_relationships
             
         except Exception as e:
-            self.logger.error(f"Erro ao recuperar relacionamentos: {str(e)}")
+            self.log_manager.error("main", f"Erro ao recuperar relacionamentos: {str(e)}")
             return []
 
     async def _update_conversation_history(
@@ -608,7 +620,7 @@ class TaleWeaverApp:
             )
             
         except Exception as e:
-            self.logger.error(f"Erro ao atualizar histórico de conversas: {str(e)}")
+            self.log_manager.error("main", f"Erro ao atualizar histórico de conversas: {str(e)}")
 
     async def _play_character_voice(self, character: Dict[str, Any], text: str) -> None:
         """Reproduz a voz do personagem para o texto fornecido
@@ -634,7 +646,7 @@ class TaleWeaverApp:
             await self.config.voice_system.play_audio(audio_data)
             
         except Exception as e:
-            self.logger.error(f"Erro ao reproduzir voz do personagem: {str(e)}")
+            self.log_manager.error("main", f"Erro ao reproduzir voz do personagem: {str(e)}")
             print(f"Erro ao reproduzir voz: {str(e)}")
 
     async def _play_narrator_voice(self, text: str) -> None:
@@ -657,7 +669,7 @@ class TaleWeaverApp:
             await self.config.voice_system.play_audio(audio_data)
             
         except Exception as e:
-            self.logger.error(f"Erro ao reproduzir voz do narrador: {str(e)}")
+            self.log_manager.error("main", f"Erro ao reproduzir voz do narrador: {str(e)}")
             print(f"Erro ao reproduzir narração: {str(e)}")
 
     async def cleanup(self) -> None:
